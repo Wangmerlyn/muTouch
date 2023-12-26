@@ -3,12 +3,11 @@
 #include <InternalFileSystem.h>
 #include "Adafruit_MLX90393.h"
 
-#define num 8
+#define num 3
 
 Adafruit_MLX90393 sensor[num];
-int CS[num] = {16,  15, 7, 11,26,25,27,30};
+int CS[num] = {1, 2, 3};
 
-//int CS[num] = {16,  15, 7, 11,30,27};
 
 // BLE Service
 BLEDfu  bledfu;  // OTA DFU service
