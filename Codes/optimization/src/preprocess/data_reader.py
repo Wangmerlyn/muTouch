@@ -1,11 +1,9 @@
+from multiprocessing import Pool
+from datetime import datetime
 import numpy as np
 import pandas as pd
-from multiprocessing import Pool
 import matplotlib.pyplot as plt
-from datetime import datetime
 from parse import parse
-from ..filter import mean_filter
-from datetime import datetime
 
 # New method
 
