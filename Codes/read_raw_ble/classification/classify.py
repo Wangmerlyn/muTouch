@@ -16,9 +16,15 @@ def load_net(net_folder:str, prefix="3_sensor_real_time_", suffix=".pth"):
     net = TS2Vec(input_dims=9, output_dims=9)
     return net.load(os.path.join(net_folder, net_path))
 
-def load_label_encoder()
+def load_label_encoder(label_folder:str, prefix="label_encoder", suffix=".joblib"):
+    label_path = find_latest_file_with_prefix_and_suffix(label_folder, prefix, suffix)
+    label_encoder = load(os.path.join(label_folder, label_path))
+    return label_encoder
 
-def classify(net, svc, window):
+def classify(net, svc, window, label_encoder=None):
     embedding = net.encode(window, encoding_window="full_series")
-    svc.predict(embedding)
+    ans = svc.predict(embedding)
+    if label_encoder is not None:
+        ans = label_encoder.inverse_transform(ans)
+    return ans
 
