@@ -1,0 +1,3 @@
+[submodule "Codes/read_raw_ble/ts2vec"]
+	path = Codes/read_raw_ble/ts2vec
+	url = git@github.com:Wangmerlyn/ts2vec.git

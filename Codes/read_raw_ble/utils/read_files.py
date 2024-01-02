@@ -23,7 +23,7 @@ def parse_filename(filename:str, file_prefix:str, file_suffix:str='.npy'):
     except ValueError:
         return None
 
-def find_latest_file_with_prefix_and_suffix(folder_path:str, file_prefix:str, file_suffix:str='.npy'):
+def find_latest_file_with_prefix_and_suffix(folder_path:str, file_prefix:str='', file_suffix:str='.npy'):
     """find the latest file with given prefix"""
     latest_file = None
     latest_date = None
