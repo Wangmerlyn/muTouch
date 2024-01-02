@@ -8,8 +8,8 @@ import datetime
 import atexit
 import time
 import numpy as np
-from Codes.read_raw_ble.classification import classify
-from Codes.read_raw_ble.classification.classify import load_label_encoder, load_net, load_svc
+from classification import classify
+from classification.classify import load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
 import matplotlib.pyplot as plt
 from bleak import exc
@@ -90,7 +90,7 @@ def notification_handler(sender, data):
         env_mag = env_readings_queue[0]
         readings_queue.append(filtered_sensors.copy())
         if len(readings_queue)==window_size:
-            res = classify(net ,svc, np.array(readings_queue))
+            res = classify(net ,svc, np.array(readings_queue), label_encoder)
             print(f"result is {res}")
     else:
         print("NO")
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     scale = np.load(scale_path)
 
     net = load_net("Codes/read_raw_ble/models/net", "3_sensor_real_time_", ".pth")
-    label_encoder = load_label_encoder("Codes/read_raw_ble/models/label_encoder", "label_encoder", ".joblib")
-    svc = load_svc("Codes/read_raw_ble/models/svc", "svc", ".joblib")
+    label_encoder = load_label_encoder("Codes/read_raw_ble/models/label_encoder", "label_encoder-", ".joblib")
+    svc = load_svc("Codes/read_raw_ble/models/svc", "svc-", ".joblib")
     print("loading done")
     asyncio.run(main())
