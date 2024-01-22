@@ -54,7 +54,7 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    gesture_name = "12-25_no-touching"
+    gesture_name = "12-25_live"
     if not os.path.exists(f"datasets/{gesture_name}"):
         os.makedirs(f"datasets/{gesture_name}")
     test.to_csv(
