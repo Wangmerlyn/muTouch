@@ -37,7 +37,7 @@ alpha = 0.5
 filtered_sensors = np.zeros((num))
 filter_alpha = 0.5
 min_window_len = 8
-min
+res = "None"
 # name = [
 #     'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5',
 #     'Sensor 6', 'Sensor 7', 'Sensor 8', 'Sensor 9', 'Sensor 10'
@@ -73,6 +73,7 @@ def notification_handler(sender, data):
     global env_mag
     global readings_queue
     global filtered_sensors
+    global res
     current = [datetime.datetime.now()]
     for i in range(num):
         sensors[i, 0] = struct.unpack('f', data[12 * i:12 * i + 4])[0]
@@ -97,10 +98,14 @@ def notification_handler(sender, data):
             print("Window full")
     else:
         if len(readings_queue)>min_window_len:
+            print(np.array(readings_queue))
             res = classify(net ,svc, np.array(readings_queue), label_encoder)
             print(f"result is {res}")
+        elif len(readings_queue)>1:
+            res = "TOO Short"
             
         print("NO")
+        print(f"last result is {res}")
         env_readings_queue.append(filtered_sensors)
         near_mag = False
         readings_queue.clear()
@@ -148,7 +153,7 @@ if __name__ == '__main__':
     scale = np.load(scale_path)
 
     # load classifier
-    net = load_net("Codes/read_raw_ble/models/net_silicon", "3_sensor_silicon", ".pth")
+    net = load_net("Codes/read_raw_ble/models/net_silicon", "3_sensor_silicon_", ".pth")
     label_encoder = load_label_encoder("Codes/read_raw_ble/models/label_encoder_silicon", "label_encoder_silicon-", ".joblib")
     svc = load_svc("Codes/read_raw_ble/models/svc_silicon", "svc_silicon-", ".joblib")
     print("loading done")
