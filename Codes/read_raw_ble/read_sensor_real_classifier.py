@@ -31,8 +31,8 @@ frame_delay = 16
 window_size = 16
 env_mag = np.zeros((3))
 near_mag = False
-readings_queue = deque(maxlen=frame_delay)
-env_readings_queue = deque(maxlen=window_size)
+readings_queue = deque(np.zeros(3),maxlen=window_size)
+env_readings_queue = deque(np.zeros(3),maxlen=frame_delay)
 alpha = 0.5
 filtered_sensors = np.zeros((num))
 filter_alpha = 0.5
@@ -54,7 +54,7 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    gesture_name = "12-25_no-touching"
+    gesture_name = "12-25_live"
     if not os.path.exists(f"datasets/{gesture_name}"):
         os.makedirs(f"datasets/{gesture_name}")
     test.to_csv(
