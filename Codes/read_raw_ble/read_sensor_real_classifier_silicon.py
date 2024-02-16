@@ -1,4 +1,5 @@
 import asyncio
+from cProfile import label
 import os
 import struct
 import sys
@@ -7,6 +8,8 @@ import datetime
 import atexit
 import time
 import numpy as np
+from classification import classify
+from classification.classify import load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
 import matplotlib.pyplot as plt
 from bleak import exc
@@ -24,13 +27,17 @@ result = []
 offset = np.zeros((num,3))
 scale = np.ones((num,3))
 threshold = 0.3
-frame_delay = 16
+env_delay = 16
+window_size = 64
 env_mag = np.zeros((3))
 near_mag = False
-readings_queue = deque(maxlen=frame_delay)
-alpha = 0.2
+readings_queue = deque(np.zeros(3),maxlen=window_size)
+env_readings_queue = deque(np.zeros(3),maxlen=env_delay)
+alpha = 0.5
 filtered_sensors = np.zeros((num))
-filter_alpha = 0.4
+filter_alpha = 0.5
+min_window_len = 8
+res = "None"
 # name = [
 #     'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5',
 #     'Sensor 6', 'Sensor 7', 'Sensor 8', 'Sensor 9', 'Sensor 10'
@@ -49,7 +56,7 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    gesture_name = "01-23_down"
+    gesture_name = "01-23_live"
     if not os.path.exists(f"datasets/{gesture_name}"):
         os.makedirs(f"datasets/{gesture_name}")
     test.to_csv(
@@ -66,6 +73,7 @@ def notification_handler(sender, data):
     global env_mag
     global readings_queue
     global filtered_sensors
+    global res
     current = [datetime.datetime.now()]
     for i in range(num):
         sensors[i, 0] = struct.unpack('f', data[12 * i:12 * i + 4])[0]
@@ -77,17 +85,30 @@ def notification_handler(sender, data):
         print(f"Sensor {i+1}: {sensors[i, 0]:.6f}, {sensors[i, 1]:.6f}, {sensors[i, 2]:.6f}")
         current.append("(" + str(sensors[i, 0]) + ", " + str(sensors[i, 1]) +
                        ", " + str(sensors[i, 2]) + ")")
-    filtered_sensors = filter_alpha*sensors + (1-filter_alpha)*filtered_sensors
+    filtered_sensors = (1-filter_alpha)*sensors + (filter_alpha)*filtered_sensors
     if (distance(filtered_sensors[0,:], filtered_sensors[-1,:], 2)>threshold):
         print("YES")
         print(f"envmag is {env_mag}")
         near_mag = True
+        env_mag = env_readings_queue[0]
+        readings_queue.append(filtered_sensors.copy())
+        if len(readings_queue)==window_size:
+            # res = classify(net ,svc, np.array(readings_queue), label_encoder)
+            # print(f"result is {res}")
+            print("Window full")
     else:
+        if len(readings_queue)>min_window_len:
+            print(np.array(readings_queue))
+            res = classify(net ,svc, np.array(readings_queue), label_encoder)
+            print(f"result is {res}")
+        elif len(readings_queue)>1:
+            res = "TOO Short"
+            
         print("NO")
+        print(f"last result is {res}")
+        env_readings_queue.append(filtered_sensors)
         near_mag = False
-    if not near_mag:
-        env_mag = filtered_sensors.copy()
-        readings_queue.append(env_mag)
+        readings_queue.clear()
         # env_mag = alpha*env_mag+(1-alpha)*readings_queue[0]
     for i in range(num):
         print(f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}")
@@ -122,6 +143,7 @@ if __name__ == '__main__':
     # address = ("C2:3C:D5:6E:35:0A")  # joint board 2
     address = "E8:71:7E:9D:FB:53" # 3 sensor board
     num = 3
+    # find corresponding calibration files
     file_folder = "mytest"
     offset_path = os.path.join(file_folder,
         find_latest_file_with_prefix_and_suffix(file_folder,"offset-"))
@@ -129,4 +151,10 @@ if __name__ == '__main__':
         find_latest_file_with_prefix_and_suffix(file_folder,"scale-"))
     offset = np.load(offset_path)
     scale = np.load(scale_path)
+
+    # load classifier
+    net = load_net("Codes/read_raw_ble/models/net_silicon", "3_sensor_silicon_", ".pth")
+    label_encoder = load_label_encoder("Codes/read_raw_ble/models/label_encoder_silicon", "label_encoder_silicon-", ".joblib")
+    svc = load_svc("Codes/read_raw_ble/models/svc_silicon", "svc_silicon-", ".joblib")
+    print("loading done")
     asyncio.run(main())
