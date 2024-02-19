@@ -13,7 +13,8 @@ from bleak import exc
 import pandas as pd
 import atexit
 from collections import deque
-from utils.read_files import find_latest_file_with_prefix_and_suffix
+from utils import find_latest_file_with_prefix_and_suffix
+from utils import Timer
 
 # Nordic NUS characteristic for RX, which should be writable`
 UART_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
@@ -126,6 +127,7 @@ def notification_handler(sender, data):
     # battery_voltage = struct.unpack('f', data[12 * num: 12 * num + 4])[0]
     # print("Battery voltage: " + str(battery_voltage))
     print(f"sample count is {sample_count}")
+    print(f"elapse time is {timer.elapsed_time()} seconds")
     print("############")
     result.append(current)
 
@@ -162,4 +164,7 @@ if __name__ == "__main__":
     )
     offset = np.load(offset_path)
     scale = np.load(scale_path)
+
+    timer = Timer()
+    timer.start()
     asyncio.run(main())
