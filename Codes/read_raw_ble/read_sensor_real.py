@@ -53,11 +53,14 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    gesture_name = "02-17_back"
-    if not os.path.exists(f"datasets/{gesture_name}"):
-        os.makedirs(f"datasets/{gesture_name}")
+    folder_name = "02-17_facetouching"
+    gesture_name = "02-17_right_eye"
+    if not os.path.exists(f"datasets/{folder_name}"):
+        os.makedirs(f"datasets/{folder_name}")
+    if not os.path.exists(f"datasets/{folder_name}/{gesture_name}"):
+        os.makedirs(f"datasets/{folder_name}/{gesture_name}")
     test.to_csv(
-        f"datasets/{gesture_name}/{gesture_name}-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.csv"
+        f"datasets/{folder_name}/{gesture_name}/{gesture_name}-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.csv"
     )
     print("Exited")
 
