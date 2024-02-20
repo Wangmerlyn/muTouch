@@ -55,7 +55,7 @@ def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
     folder_name = "02-17_facetouching"
-    gesture_name = "02-17_right_eye"
+    gesture_name = "02-17_no-touch"
     if not os.path.exists(f"datasets/{folder_name}"):
         os.makedirs(f"datasets/{folder_name}")
     if not os.path.exists(f"datasets/{folder_name}/{gesture_name}"):
