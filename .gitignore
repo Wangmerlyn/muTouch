@@ -182,6 +182,11 @@ Codes/leap_motion/Leap.py
 
 datasets/
 mytest/
+calibration_files/
 dev_temp/
 **/net/
 **/net_silicon/
+
+# dev tools
+sender.sh
+receiver.sh
