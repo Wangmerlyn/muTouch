@@ -8,7 +8,7 @@ import datetime
 import atexit
 import time
 import numpy as np
-from Codes.read_raw_ble.utils.misc import format_current_time
+from utils import format_current_time
 from classification import classify
 from classification.classify import load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
@@ -30,7 +30,7 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 user_id = "02"
 task = "face_touching"
 gesture_name = "test"
-facing = "0"
+facing = "3"
 
 num = 3
 sensors = np.zeros((num, 3))
