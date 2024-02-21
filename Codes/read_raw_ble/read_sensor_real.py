@@ -14,6 +14,7 @@ import pandas as pd
 import atexit
 from collections import deque
 from utils import find_latest_file_with_prefix_and_suffix
+from utils import format_current_time
 from utils import Timer
 
 # Nordic NUS characteristic for RX, which should be writable`
@@ -54,14 +55,14 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    folder_name = "02-20_facetouching"
-    gesture_name = "02-20_no-touching"
-    if not os.path.exists(f"datasets/{folder_name}"):
-        os.makedirs(f"datasets/{folder_name}")
-    if not os.path.exists(f"datasets/{folder_name}/{gesture_name}"):
-        os.makedirs(f"datasets/{folder_name}/{gesture_name}")
+    user_id = "02"
+    task = "face_touching"
+    gesture_name = "pretrain"
+    gesture_path = f"datasets/{user_id}/{task}/{gesture_name}"
+    if not os.path.exists(gesture_path):
+        os.makedirs(gesture_path)
     test.to_csv(
-        f"datasets/{folder_name}/{gesture_name}/{gesture_name}-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.csv"
+        f"{gesture_path}/{gesture_name}-{format_current_time()}.csv"
     )
     print("Exited")
 
@@ -155,7 +156,7 @@ if __name__ == "__main__":
     # address = ("C2:3C:D5:6E:35:0A")  # joint board 2
     address = "E8:71:7E:9D:FB:53"  # 3 sensor board
     num = 3
-    file_folder = "mytest"
+    file_folder = "calibration_files"
     offset_path = os.path.join(
         file_folder, find_latest_file_with_prefix_and_suffix(file_folder, "offset-")
     )
