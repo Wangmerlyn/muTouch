@@ -1,5 +1,6 @@
 import asyncio
 from cProfile import label
+from cgi import test
 import os
 import struct
 import sys
@@ -48,6 +49,7 @@ filtered_sensors = np.zeros((num))
 filter_alpha = 0.5
 min_window_len = 8
 res = "None"
+test_list = []
 # name = [
 #     'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5',
 #     'Sensor 6', 'Sensor 7', 'Sensor 8', 'Sensor 9', 'Sensor 10'
@@ -81,6 +83,7 @@ def notification_handler(sender, data):
     global readings_queue
     global filtered_sensors
     global res
+    global test_list
     current = [datetime.datetime.now()]
     for i in range(num):
         sensors[i, 0] = struct.unpack("f", data[12 * i : 12 * i + 4])[0]
@@ -117,6 +120,7 @@ def notification_handler(sender, data):
             print(np.array(readings_queue))
             res = classify(net, svc, np.array(readings_queue), label_encoder)
             print(f"result is {res}")
+            test_list.append(res)
         elif len(readings_queue) > 1:
             res = "TOO Short"
 
@@ -134,6 +138,7 @@ def notification_handler(sender, data):
 
     # battery_voltage = struct.unpack('f', data[12 * num: 12 * num + 4])[0]
     # print("Battery voltage: " + str(battery_voltage))
+    print(f"the test result is {test_list}")
     print("############")
     result.append(current)
 
