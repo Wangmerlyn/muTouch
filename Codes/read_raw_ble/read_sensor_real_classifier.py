@@ -49,6 +49,7 @@ filtered_sensors = np.zeros((num))
 filter_alpha = 0.5
 result_queue = deque()
 min_result_len = 4
+test_list = []
 # name = [
 #     'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5',
 #     'Sensor 6', 'Sensor 7', 'Sensor 8', 'Sensor 9', 'Sensor 10'
@@ -83,6 +84,7 @@ def notification_handler(sender, data):
     global filtered_sensors
     global result_queue
     global min_result_len
+    global test_list
     current = [datetime.datetime.now()]
     for i in range(num):
         sensors[i, 0] = struct.unpack("f", data[12 * i : 12 * i + 4])[0]
@@ -121,20 +123,23 @@ def notification_handler(sender, data):
         readings_queue.clear()
         if len(result_queue) >= min_result_len:
             # majority vote over result queue
+            whole_result = majority_vote(result_queue)
             pprint(result_queue)
-            print(
-                f"majority result over the last window is {majority_vote(result_queue)}"
-            )
+            print(f"majority result over the last window is {whole_result}")
+            test_list.append(whole_result)
+
         result_queue.clear()
 
         # env_mag = alpha*env_mag+(1-alpha)*readings_queue[0]
-    for i in range(num):
-        print(
-            f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}"
-        )
+    # hide the filtered sensor since that's too much info on the terminal
+    # for i in range(num):
+    #     print(
+    #         f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}"
+    #     )
 
     # battery_voltage = struct.unpack('f', data[12 * num: 12 * num + 4])[0]
     # print("Battery voltage: " + str(battery_voltage))
+    print(f"the test result is {test_list}")
     print("############")
     result.append(current)
 
