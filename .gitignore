@@ -182,3 +182,6 @@ Codes/leap_motion/Leap.py
 
 datasets/
 mytest/
+dev_temp/
+**/net/
+**/net_silicon/
