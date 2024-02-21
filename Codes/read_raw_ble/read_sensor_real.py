@@ -7,6 +7,7 @@ import datetime
 import atexit
 import time
 import numpy as np
+from torch import ge
 from bleak import BleakClient
 import matplotlib.pyplot as plt
 from bleak import exc
@@ -21,6 +22,13 @@ from utils import Timer
 UART_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 # Nordic NUS characteristic for TX, which should be readable
 UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
+# For user and sample info
+
+user_id = "02"
+task = "face_touching"
+gesture_name = "pretrain"
+
 num = 3
 sensors = np.zeros((num, 3))
 result = []
@@ -55,15 +63,13 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    user_id = "02"
-    task = "face_touching"
-    gesture_name = "pretrain"
+    # user_id = "02"
+    # task = "face_touching"
+    # gesture_name = "pretrain"
     gesture_path = f"datasets/{user_id}/{task}/{gesture_name}"
     if not os.path.exists(gesture_path):
         os.makedirs(gesture_path)
-    test.to_csv(
-        f"{gesture_path}/{gesture_name}-{format_current_time()}.csv"
-    )
+    test.to_csv(f"{gesture_path}/{gesture_name}-{format_current_time()}.csv")
     print("Exited")
 
 
@@ -120,10 +126,11 @@ def notification_handler(sender, data):
         near_mag = False
         readings_queue.clear()
         # env_mag = alpha*env_mag+(1-alpha)*readings_queue[0]
-    for i in range(num):
-        print(
-            f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}"
-        )
+    # hide the filtered sensor since that's too much info on the terminal
+    # for i in range(num):
+    #     print(
+    #         f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}"
+    #     )
 
     # battery_voltage = struct.unpack('f', data[12 * num: 12 * num + 4])[0]
     # print("Battery voltage: " + str(battery_voltage))
@@ -156,12 +163,14 @@ if __name__ == "__main__":
     # address = ("C2:3C:D5:6E:35:0A")  # joint board 2
     address = "E8:71:7E:9D:FB:53"  # 3 sensor board
     num = 3
-    file_folder = "calibration_files"
+    calib_file_folder = "calibration_files"
     offset_path = os.path.join(
-        file_folder, find_latest_file_with_prefix_and_suffix(file_folder, "offset-")
+        calib_file_folder,
+        find_latest_file_with_prefix_and_suffix(calib_file_folder, "offset-"),
     )
     scale_path = os.path.join(
-        file_folder, find_latest_file_with_prefix_and_suffix(file_folder, "scale-")
+        calib_file_folder,
+        find_latest_file_with_prefix_and_suffix(calib_file_folder, "scale-"),
     )
     offset = np.load(offset_path)
     scale = np.load(scale_path)

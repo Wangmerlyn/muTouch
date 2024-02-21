@@ -1,5 +1,4 @@
 import asyncio
-from cProfile import label
 import os
 from pprint import pprint
 import struct
@@ -9,6 +8,7 @@ import datetime
 import atexit
 import time
 import numpy as np
+from Codes.read_raw_ble.utils.misc import format_current_time
 from classification import classify
 from classification.classify import load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
@@ -24,6 +24,14 @@ from utils import queue_count, majority_vote
 UART_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 # Nordic NUS characteristic for TX, which should be readable
 UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
+# For user and sample info
+
+user_id = "02"
+task = "face_touching"
+gesture_name = "test"
+facing = "0"
+
 num = 3
 sensors = np.zeros((num, 3))
 result = []
@@ -58,12 +66,10 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    gesture_name = "12-25_live"
-    if not os.path.exists(f"datasets/{gesture_name}"):
-        os.makedirs(f"datasets/{gesture_name}")
-    test.to_csv(
-        f"datasets/{gesture_name}/{gesture_name}-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.csv"
-    )
+    gesture_path = f"datasets/{user_id}/{task}/{gesture_name}"
+    if not os.path.exists(gesture_path):
+        os.makedirs(gesture_path)
+    test.to_csv(f"{gesture_path}/{gesture_name}-{facing}-{format_current_time()}.csv")
     print("Exited")
 
 
@@ -166,10 +172,11 @@ if __name__ == "__main__":
     offset = np.load(offset_path)
     scale = np.load(scale_path)
 
-    net = load_net("Codes/read_raw_ble/models/net", "3_sensor_real_time_", ".pth")
+    model_path = f"Codes/read_raw_ble/models/{user_id}/{task}"
+    net = load_net(f"{model_path}/net", "3_sensor_face_touching_", ".pth")
     label_encoder = load_label_encoder(
-        "Codes/read_raw_ble/models/label_encoder", "label_encoder-", ".joblib"
+        f"{model_path}/label_encoder", "label_encoder-", ".joblib"
     )
-    svc = load_svc("Codes/read_raw_ble/models/svc", "svc-", ".joblib")
+    svc = load_svc(f"{model_path}/svc", "svc-", ".joblib")
     print("loading done")
     asyncio.run(main())
