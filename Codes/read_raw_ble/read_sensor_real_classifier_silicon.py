@@ -167,12 +167,14 @@ if __name__ == "__main__":
     address = "E8:71:7E:9D:FB:53"  # 3 sensor board
     num = 3
     # find corresponding calibration files
-    file_folder = "mytest"
+    calib_file_folder = "calibration_files"
     offset_path = os.path.join(
-        file_folder, find_latest_file_with_prefix_and_suffix(file_folder, "offset-")
+        calib_file_folder,
+        find_latest_file_with_prefix_and_suffix(calib_file_folder, "offset-"),
     )
     scale_path = os.path.join(
-        file_folder, find_latest_file_with_prefix_and_suffix(file_folder, "scale-")
+        calib_file_folder,
+        find_latest_file_with_prefix_and_suffix(calib_file_folder, "scale-"),
     )
     offset = np.load(offset_path)
     scale = np.load(scale_path)
