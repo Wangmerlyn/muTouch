@@ -18,7 +18,7 @@ import pandas as pd
 import atexit
 from collections import deque
 from utils import find_latest_file_with_prefix_and_suffix
-from utils import queue_count, majority_vote
+from classification.classify import queue_count, majority_vote
 
 # Nordic NUS characteristic for RX, which should be writable`
 UART_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
