@@ -9,7 +9,7 @@ import datetime
 import atexit
 import time
 import numpy as np
-from Codes.read_raw_ble.utils.misc import format_current_time
+from utils.misc import format_current_time
 from classification import classify
 from classification.classify import load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
@@ -27,7 +27,7 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 # For user and sample info
 
-user_id = "02"
+user_id = "03"
 task = "silicon"
 gesture_name = "test"
 facing = "0"
@@ -181,7 +181,7 @@ if __name__ == "__main__":
 
     # load classifier
     model_path = f"Codes/read_raw_ble/models/{user_id}/{task}"
-    net = load_net(f"{model_path}/net_silicon", "3_sensor_silicon_", ".pth")
+    net = load_net(f"{model_path}/net", "3_sensor_silicon_", ".pth")
     label_encoder = load_label_encoder(
         f"{model_path}/label_encoder_silicon", "label_encoder_silicon-", ".joblib"
     )
