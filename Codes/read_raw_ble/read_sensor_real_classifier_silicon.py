@@ -27,7 +27,7 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 # For user and sample info
 
-user_id = "03"
+user_id = "01"
 task = "silicon"
 gesture_name = "test"
 facing = "0"
@@ -118,7 +118,7 @@ def notification_handler(sender, data):
     else:
         if len(readings_queue) > min_window_len:
             print(np.array(readings_queue))
-            res = classify(net, svc, np.array(readings_queue), label_encoder)
+            res = classify(net, svc, np.array(readings_queue), label_encoder)[0]
             print(f"result is {res}")
             test_list.append(res)
         elif len(readings_queue) > 1:
