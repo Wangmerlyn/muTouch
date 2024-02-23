@@ -117,8 +117,11 @@ def notification_handler(sender, data):
             print("Window full")
     else:
         if len(readings_queue) > min_window_len:
+            from sklearn.preprocessing import StandardScaler
+            scaler = StandardScaler(with_mean=False)
             print(np.array(readings_queue))
-            res = classify(net, svc, np.array(readings_queue), label_encoder)[0]
+            # res = classify(net, svc, scaler.fit_transform(np.array(readings_queue).reshape(-1,9)).reshape(-1,3,3), label_encoder)[0]
+            res = classify(net, svc, (np.array(readings_queue)), label_encoder)[0]
             print(f"result is {res}")
             test_list.append(res)
         elif len(readings_queue) > 1:
