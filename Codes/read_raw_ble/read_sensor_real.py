@@ -25,9 +25,9 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 # For user and sample info
 
-user_id = "07"
+user_id = "08"
 task = "face_touching"
-gesture_name = "no_touching"
+gesture_name = "right_eye"
 num = 3
 sensors = np.zeros((num, 3))
 result = []
