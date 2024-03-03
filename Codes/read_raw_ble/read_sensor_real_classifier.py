@@ -27,9 +27,9 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 # For user and sample info
 
-user_id = "05"
+user_id = "07"
 task = "face_touching"
-gesture_name = "test"
+gesture_name = "test_remount"
 facing = "4"
 
 num = 3
