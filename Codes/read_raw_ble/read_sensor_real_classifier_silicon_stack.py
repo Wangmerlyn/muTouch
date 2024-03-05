@@ -11,7 +11,7 @@ import time
 import numpy as np
 from utils.misc import format_current_time
 from classification import classify
-from classification.classify import load_label_encoder, load_net, load_svc, classify
+from classification.classify import classify_3_stack, load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
 import matplotlib.pyplot as plt
 from bleak import exc
@@ -121,7 +121,7 @@ def notification_handler(sender, data):
             scaler = StandardScaler(with_mean=False)
             print(np.array(readings_queue))
             # res = classify(net, svc, scaler.fit_transform(np.array(readings_queue).reshape(-1,9)).reshape(-1,3,3), label_encoder)[0]
-            res = classify(net, svc, (np.array(readings_queue)), label_encoder)[0]
+            res = classify_3_stack(net, svc, (np.array(readings_queue)), label_encoder)[0]
             print(f"result is {res}")
             test_list.append(res)
         elif len(readings_queue) > 1:

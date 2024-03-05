@@ -52,12 +52,12 @@ def classify(net, svc, window, label_encoder=None):
 
 def classify_3_stack(net, svc, window, label_encoder=None):
     sm_kernel = math.ceil(window.shape[0] / 3)
-    embedding = net.encode(window.reshape(-1, 9)[np.newaxis, :, :]).squeeze()
+    embedding = net.encode(window.reshape(-1, 9)[np.newaxis,:,:]).squeeze()
     start_emb = np.max(embedding[:sm_kernel], axis=0)
     mid_emb = np.max(embedding[sm_kernel : 2 * sm_kernel], axis=0)
     end_emb = np.max(embedding[2 * sm_kernel :], axis=0)
     embedding = np.concatenate([start_emb, mid_emb, end_emb])
-    ans = svc.predict(embedding[np.newaxis, :, :])
+    ans = svc.predict(embedding[np.newaxis, :])
     if label_encoder is not None:
         ans = label_encoder.inverse_transform(ans)
     return ans
