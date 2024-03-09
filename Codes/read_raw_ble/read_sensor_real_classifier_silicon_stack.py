@@ -109,7 +109,7 @@ def notification_handler(sender, data):
         print("YES")
         print(f"envmag is {env_mag}")
         near_mag = True
-        env_mag = env_readings_queue[0]
+        env_mag = env_readings_queue[0].mean(axis=0)
         readings_queue.append(filtered_sensors.copy())
         if len(readings_queue) == window_size:
             # res = classify(net ,svc, np.array(readings_queue), label_encoder)
@@ -121,7 +121,7 @@ def notification_handler(sender, data):
             scaler = StandardScaler(with_mean=False)
             print(np.array(readings_queue))
             # res = classify(net, svc, scaler.fit_transform(np.array(readings_queue).reshape(-1,9)).reshape(-1,3,3), label_encoder)[0]
-            res = classify_3_stack(net, svc, (np.array(readings_queue)), label_encoder)[0]
+            res = classify_3_stack(net, svc, (np.array(readings_queue)-env_mag[np.newaxis,np.newaxis,:]), label_encoder)[0]
             print(f"result is {res}")
             test_list.append(res)
         elif len(readings_queue) > 1:

@@ -110,10 +110,10 @@ def notification_handler(sender, data):
         print("YES")
         print(f"envmag is {env_mag}")
         near_mag = True
-        env_mag = env_readings_queue[0]
+        env_mag = env_readings_queue[0].mean(axis=0)
         readings_queue.append(filtered_sensors.copy())
         if len(readings_queue) == window_size:
-            res = classify(net, svc, np.array(readings_queue), label_encoder)[0]
+            res = classify(net, svc, np.array(readings_queue)-env_mag[np.newaxis,np.newaxis,:], label_encoder)[0]
             print(f"this window is {res}")
             result_queue.append(res)
     else:
