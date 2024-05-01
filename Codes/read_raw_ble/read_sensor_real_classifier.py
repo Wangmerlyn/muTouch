@@ -27,10 +27,10 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 # For user and sample info
 
-user_id = "11"
+user_id = "hp_env_net_02"
 task = "face_touching"
-gesture_name = "test"
-facing = "0"
+gesture_name = "bike"
+facing = "4"
 
 num = 3
 sensors = np.zeros((num, 3))
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     scale = np.load(scale_path)
 
     model_path = f"Codes/read_raw_ble/models/{user_id}/{task}"
-    net = load_net(f"{model_path}/net", "3_sensor_face_touching_", ".pth")
+    net = load_net(f"{model_path}/net", "net_", ".pth")
     label_encoder = load_label_encoder(
         f"{model_path}/label_encoder", "label_encoder-", ".joblib"
     )

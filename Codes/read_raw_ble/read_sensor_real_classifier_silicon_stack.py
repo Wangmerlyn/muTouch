@@ -27,9 +27,9 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 # For user and sample info
 
-user_id = "06"
+user_id = "hp_silicon_only_03_24_03"
 task = "silicon"
-gesture_name = "test_remount"
+gesture_name = "bike"
 facing = "4"
 
 num = 3
@@ -184,10 +184,10 @@ if __name__ == "__main__":
 
     # load classifier
     model_path = f"Codes/read_raw_ble/models/{user_id}/{task}"
-    net = load_net(f"{model_path}/net", "3_sensor_silicon_", ".pth")
+    net = load_net(f"{model_path}/net", "net_", ".pth")
     label_encoder = load_label_encoder(
-        f"{model_path}/label_encoder_silicon", "label_encoder_silicon-", ".joblib"
+        f"{model_path}/label_encoder", "label_encoder-", ".joblib"
     )
-    svc = load_svc(f"{model_path}/svc_silicon", "svc_silicon-", ".joblib")
+    svc = load_svc(f"{model_path}/svc", "svc-", ".joblib")
     print("loading done")
     asyncio.run(main())
