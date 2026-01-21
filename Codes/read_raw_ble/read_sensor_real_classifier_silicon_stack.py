@@ -3,24 +3,31 @@ import os
 import struct
 import datetime
 import atexit
-from collections import deque
-
 import numpy as np
-import pandas as pd
-from bleak import BleakClient
-
 from utils.misc import format_current_time
+from classification.classify import (
+    classify_3_stack,
+    load_label_encoder,
+    load_net,
+    load_svc,
+)
+from bleak import BleakClient
+import pandas as pd
+from collections import deque
 from utils.read_files import find_latest_file_with_prefix_and_suffix
-from utils.timer import Timer
 
 # Nordic NUS characteristic for RX, which should be writable`
 UART_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 # Nordic NUS characteristic for TX, which should be readable
 UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
-user_id = "for_tsne"
-task = "face_touching"
-gesture_name = "no_touching"
+# For user and sample info
+
+user_id = "hp_silicon_only_03_24_03"
+task = "silicon"
+gesture_name = "bike"
+facing = "4"
+
 num = 3
 sensors = np.zeros((num, 3))
 result = []
@@ -30,13 +37,21 @@ threshold = 0.3
 env_delay = 16
 window_size = 64
 env_mag = np.zeros((3))
-readings_queue = deque(maxlen=window_size)
-env_readings_queue = deque(maxlen=env_delay)
-filter_alpha = 0.5
+readings_queue = deque(np.zeros(3), maxlen=window_size)
+env_readings_queue = deque(np.zeros(3), maxlen=env_delay)
+alpha = 0.5
 filtered_sensors = np.zeros((num))
+filter_alpha = 0.5
 min_window_len = 8
-sample_count = 0
+res = "None"
+test_list = []
+# name = [
+#     'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5',
+#     'Sensor 6', 'Sensor 7', 'Sensor 8', 'Sensor 9', 'Sensor 10'
+# ]
 name = ["Time Stamp", "Sensor 1", "Sensor 2", "Sensor 3"]
+# name = ['Time Stamp', 'Sensor 1', 'Sensor 2',
+# 'Sensor 3', 'Sensor 4', 'Sensor 5', 'Sensor 6']
 
 
 def distance(b_1, b_0, p=1):
@@ -50,18 +65,20 @@ def clean():
     gesture_path = f"datasets/{user_id}/{task}/{gesture_name}"
     if not os.path.exists(gesture_path):
         os.makedirs(gesture_path)
-    test.to_csv(f"{gesture_path}/{gesture_name}-{format_current_time()}.csv")
+    test.to_csv(f"{gesture_path}/{gesture_name}-{facing}-{format_current_time()}.csv")
     print("Exited")
 
 
 def notification_handler(sender, data):
     """Simple notification handler which prints the data received."""
+    global num
     global sensors
     global result
     global env_mag
     global readings_queue
     global filtered_sensors
-    global sample_count
+    global res
+    global test_list
     current = [datetime.datetime.now()]
     for i in range(num):
         sensors[i, 0] = struct.unpack("f", data[12 * i : 12 * i + 4])[0]
@@ -73,38 +90,68 @@ def notification_handler(sender, data):
         print(
             f"Sensor {i+1}: {sensors[i, 0]:.6f}, {sensors[i, 1]:.6f}, {sensors[i, 2]:.6f}"
         )
-        current.append(f"({sensors[i, 0]}, {sensors[i, 1]}, {sensors[i, 2]})")
+        current.append(
+            "("
+            + str(sensors[i, 0])
+            + ", "
+            + str(sensors[i, 1])
+            + ", "
+            + str(sensors[i, 2])
+            + ")"
+        )
     filtered_sensors = (1 - filter_alpha) * sensors + (filter_alpha) * filtered_sensors
     has_motion = (
         distance(filtered_sensors[0, :], filtered_sensors[-1, :], 2) > threshold
     )
     if has_motion:
         print("YES")
-        if env_readings_queue:
-            env_mag = env_readings_queue[0]
+        print(f"envmag is {env_mag}")
+        env_mag = env_readings_queue[0].mean(axis=0)
         readings_queue.append(filtered_sensors.copy())
         if len(readings_queue) == window_size:
+            # res = classify(net ,svc, np.array(readings_queue), label_encoder)
+            # print(f"result is {res}")
             print("Window full")
     else:
         if len(readings_queue) > min_window_len:
-            print(f"Good sample, len is {len(readings_queue)}")
-            sample_count += 1
+            print(np.array(readings_queue))
+            # res = classify(net, svc, scaler.fit_transform(np.array(readings_queue).reshape(-1,9)).reshape(-1,3,3), label_encoder)[0]
+            res = classify_3_stack(
+                net,
+                svc,
+                (np.array(readings_queue) - env_mag[np.newaxis, np.newaxis, :]),
+                label_encoder,
+            )[0]
+            print(f"result is {res}")
+            test_list.append(res)
         elif len(readings_queue) > 1:
-            print("NO")
-        env_readings_queue.append(filtered_sensors.copy())
-        readings_queue.clear()
+            res = "TOO Short"
 
-    print(f"sample count is {sample_count}")
-    print(f"elapse time is {timer.elapsed_time()} seconds")
+        print("NO")
+        print(f"last result is {res}")
+        env_readings_queue.append(filtered_sensors)
+        readings_queue.clear()
+        # env_mag = alpha*env_mag+(1-alpha)*readings_queue[0]
+    # hide the filtered sensor since that's too much info on the terminal
+    # for i in range(num):
+    #     print(
+    #         f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}"
+    #     )
+
+    # battery_voltage = struct.unpack('f', data[12 * num: 12 * num + 4])[0]
+    # print("Battery voltage: " + str(battery_voltage))
+    print(f"the test result is {test_list}")
     print("############")
     result.append(current)
 
 
 async def run(address, loop):
     async with BleakClient(address, loop=loop) as client:
+        # wait for BLE client to be connected
         x = await client.is_connected()
         print("Connected: {0}".format(x))
         print("Press Enter to quit...")
+        # wait for data to be sent from client
         await client.start_notify(UART_TX_UUID, notification_handler)
         while True:
             await asyncio.sleep(0.01)
@@ -112,12 +159,16 @@ async def run(address, loop):
 
 
 async def main():
+    global address
     await asyncio.gather(asyncio.create_task(run(address, asyncio.get_event_loop())))
 
 
 if __name__ == "__main__":
+    # address = ("D4:6B:83:ab:C5:F2")  # circle board
+    # address = ("C2:3C:D5:6E:35:0A")  # joint board 2
     address = "E8:71:7E:9D:FB:53"  # 3 sensor board
     num = 3
+    # find corresponding calibration files
     calib_file_folder = "calibration_files"
     offset_path = os.path.join(
         calib_file_folder,
@@ -130,6 +181,12 @@ if __name__ == "__main__":
     offset = np.load(offset_path)
     scale = np.load(scale_path)
 
-    timer = Timer()
-    timer.start()
+    # load classifier
+    model_path = f"Codes/read_raw_ble/models/{user_id}/{task}"
+    net = load_net(f"{model_path}/net", "net_", ".pth")
+    label_encoder = load_label_encoder(
+        f"{model_path}/label_encoder", "label_encoder-", ".joblib"
+    )
+    svc = load_svc(f"{model_path}/svc", "svc-", ".joblib")
+    print("loading done")
     asyncio.run(main())

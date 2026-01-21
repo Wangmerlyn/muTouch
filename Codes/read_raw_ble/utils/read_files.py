@@ -2,25 +2,26 @@ import os
 from datetime import datetime
 
 
-def remove_prefix(text: str, prefix):
+def remove_prefix(text: str, prefix: str):
     if text.startswith(prefix):
         return text[len(prefix) :]
     return text
 
 
-def remove_suffix(text: str, suffix):
+def remove_suffix(text: str, suffix: str):
     if text.endswith(suffix):
         return text[: -len(suffix)]
     return text
 
 
 def parse_filename(filename: str, file_prefix: str, file_suffix: str = ".npy"):
-    """Extract date and time info in the file name"""
+    """Extract date and time info in the file name."""
     date_str = remove_prefix(filename, file_prefix)
     date_str = remove_suffix(date_str, file_suffix)
+    if date_str.count("-") > 5:
+        date_str = "-".join(date_str.split("-")[-6:])
     try:
-        file_datetime = datetime.strptime(date_str, "%Y-%m-%d-%H-%M-%S")
-        return file_datetime
+        return datetime.strptime(date_str, "%Y-%m-%d-%H-%M-%S")
     except ValueError:
         return None
 
@@ -28,7 +29,7 @@ def parse_filename(filename: str, file_prefix: str, file_suffix: str = ".npy"):
 def find_latest_file_with_prefix_and_suffix(
     folder_path: str, file_prefix: str = "", file_suffix: str = ".npy"
 ):
-    """find the latest file with given prefix"""
+    """Find the latest file with given prefix/suffix."""
     latest_file = None
     latest_date = None
 
@@ -43,10 +44,9 @@ def find_latest_file_with_prefix_and_suffix(
 
     if latest_file is not None:
         return latest_file
-    else:
-        raise FileNotFoundError(
-            f'Corresponding file starts with "{file_prefix}" and ends with "{file_suffix}" not found'
-        )
+    raise FileNotFoundError(
+        f'Corresponding file starts with "{file_prefix}" and ends with "{file_suffix}" not found'
+    )
 
 
 def test():
