@@ -1,4 +1,6 @@
 import asyncio
+from cProfile import label
+from cgi import test
 import os
 import struct
 import sys
@@ -7,16 +9,16 @@ import datetime
 import atexit
 import time
 import numpy as np
-from torch import ge
+from utils.misc import format_current_time
+from classification import classify
+from classification.classify import load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
 import matplotlib.pyplot as plt
 from bleak import exc
 import pandas as pd
 import atexit
 from collections import deque
-from utils import find_latest_file_with_prefix_and_suffix
-from utils import format_current_time
-from utils import Timer
+from utils.read_files import find_latest_file_with_prefix_and_suffix
 
 # Nordic NUS characteristic for RX, which should be writable`
 UART_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
@@ -25,9 +27,11 @@ UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 # For user and sample info
 
-user_id = "for_tsne"
-task = "face_touching"
-gesture_name = "no_touching"
+user_id = "01"
+task = "silicon"
+gesture_name = "test"
+facing = "0"
+
 num = 3
 sensors = np.zeros((num, 3))
 result = []
@@ -44,7 +48,8 @@ alpha = 0.5
 filtered_sensors = np.zeros((num))
 filter_alpha = 0.5
 min_window_len = 8
-sample_count = 0
+res = "None"
+test_list = []
 # name = [
 #     'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5',
 #     'Sensor 6', 'Sensor 7', 'Sensor 8', 'Sensor 9', 'Sensor 10'
@@ -62,13 +67,10 @@ def distance(b_1, b_0, p=1):
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    # user_id = "02"
-    # task = "face_touching"
-    # gesture_name = "pretrain"
     gesture_path = f"datasets/{user_id}/{task}/{gesture_name}"
     if not os.path.exists(gesture_path):
         os.makedirs(gesture_path)
-    test.to_csv(f"{gesture_path}/{gesture_name}-{format_current_time()}.csv")
+    test.to_csv(f"{gesture_path}/{gesture_name}-{facing}-{format_current_time()}.csv")
     print("Exited")
 
 
@@ -80,7 +82,8 @@ def notification_handler(sender, data):
     global env_mag
     global readings_queue
     global filtered_sensors
-    global sample_count
+    global res
+    global test_list
     current = [datetime.datetime.now()]
     for i in range(num):
         sensors[i, 0] = struct.unpack("f", data[12 * i : 12 * i + 4])[0]
@@ -114,13 +117,18 @@ def notification_handler(sender, data):
             print("Window full")
     else:
         if len(readings_queue) > min_window_len:
-            # print(np.array(readings_queue))
-            # res = classify(net, svc, np.array(readings_queue), label_encoder)
-            # print(f"result is {res}")
-            print(f"Good sample, len is {len(readings_queue)}")
-            sample_count += 1
+            from sklearn.preprocessing import StandardScaler
+            scaler = StandardScaler(with_mean=False)
+            print(np.array(readings_queue))
+            # res = classify(net, svc, scaler.fit_transform(np.array(readings_queue).reshape(-1,9)).reshape(-1,3,3), label_encoder)[0]
+            res = classify(net, svc, (np.array(readings_queue)), label_encoder)[0]
+            print(f"result is {res}")
+            test_list.append(res)
         elif len(readings_queue) > 1:
-            print("NO")
+            res = "TOO Short"
+
+        print("NO")
+        print(f"last result is {res}")
         env_readings_queue.append(filtered_sensors)
         near_mag = False
         readings_queue.clear()
@@ -133,8 +141,7 @@ def notification_handler(sender, data):
 
     # battery_voltage = struct.unpack('f', data[12 * num: 12 * num + 4])[0]
     # print("Battery voltage: " + str(battery_voltage))
-    print(f"sample count is {sample_count}")
-    print(f"elapse time is {timer.elapsed_time()} seconds")
+    print(f"the test result is {test_list}")
     print("############")
     result.append(current)
 
@@ -162,6 +169,7 @@ if __name__ == "__main__":
     # address = ("C2:3C:D5:6E:35:0A")  # joint board 2
     address = "E8:71:7E:9D:FB:53"  # 3 sensor board
     num = 3
+    # find corresponding calibration files
     calib_file_folder = "calibration_files"
     offset_path = os.path.join(
         calib_file_folder,
@@ -174,6 +182,12 @@ if __name__ == "__main__":
     offset = np.load(offset_path)
     scale = np.load(scale_path)
 
-    timer = Timer()
-    timer.start()
+    # load classifier
+    model_path = f"Codes/read_raw_ble/models/{user_id}/{task}"
+    net = load_net(f"{model_path}/net", "3_sensor_silicon_", ".pth")
+    label_encoder = load_label_encoder(
+        f"{model_path}/label_encoder_silicon", "label_encoder_silicon-", ".joblib"
+    )
+    svc = load_svc(f"{model_path}/svc_silicon", "svc_silicon-", ".joblib")
+    print("loading done")
     asyncio.run(main())

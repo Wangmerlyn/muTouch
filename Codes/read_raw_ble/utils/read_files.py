@@ -14,11 +14,23 @@ def remove_suffix(text:str, suffix):
 
 def parse_filename(filename:str, file_prefix:str, file_suffix:str='.npy'):
     """Extract date and time info in the file name"""
+    # base_name = os.path.basename(filename)
+    # date_str = remove_prefix(filename, file_prefix)
+    # date_str = remove_suffix(date_str, file_suffix)
+    # try:
+    #     file_datetime = datetime.strptime(date_str, '%Y-%m-%d-%H-%M-%S')
+    #     return file_datetime
+    # except ValueError:
+    #     return None
     base_name = os.path.basename(filename)
     date_str = remove_prefix(filename, file_prefix)
+    # date_str = "-".join(filename.split("-")[1:])
     date_str = remove_suffix(date_str, file_suffix)
+    if date_str.count("-") > 5:
+        # delete from the start until 5 '-' left
+        date_str = "-".join(date_str.split("-")[-6:])
     try:
-        file_datetime = datetime.strptime(date_str, '%Y-%m-%d-%H-%M-%S')
+        file_datetime = datetime.strptime(date_str, "%Y-%m-%d-%H-%M-%S")
         return file_datetime
     except ValueError:
         return None

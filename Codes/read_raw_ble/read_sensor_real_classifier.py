@@ -1,6 +1,6 @@
 import asyncio
-from cProfile import label
 import os
+from pprint import pprint
 import struct
 import sys
 import time
@@ -8,6 +8,7 @@ import datetime
 import atexit
 import time
 import numpy as np
+from utils import format_current_time
 from classification import classify
 from classification.classify import load_label_encoder, load_net, load_svc, classify
 from bleak import BleakClient
@@ -16,50 +17,60 @@ from bleak import exc
 import pandas as pd
 import atexit
 from collections import deque
-from utils.read_files import find_latest_file_with_prefix_and_suffix
+from utils import find_latest_file_with_prefix_and_suffix
+from classification.classify import queue_count, majority_vote
+
 # Nordic NUS characteristic for RX, which should be writable`
 UART_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 # Nordic NUS characteristic for TX, which should be readable
 UART_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
+# For user and sample info
+
+user_id = "hp_env_net_02"
+task = "face_touching"
+gesture_name = "bike"
+facing = "4"
+
 num = 3
 sensors = np.zeros((num, 3))
 result = []
-offset = np.zeros((num,3))
-scale = np.ones((num,3))
+offset = np.zeros((num, 3))
+scale = np.ones((num, 3))
 threshold = 0.3
 frame_delay = 16
 window_size = 16
 env_mag = np.zeros((3))
 near_mag = False
-readings_queue = deque(maxlen=frame_delay)
-env_readings_queue = deque(maxlen=window_size)
+readings_queue = deque(np.zeros(3), maxlen=window_size)
+env_readings_queue = deque(np.zeros(3), maxlen=frame_delay)
 alpha = 0.5
 filtered_sensors = np.zeros((num))
 filter_alpha = 0.5
+result_queue = deque()
+min_result_len = 4
+test_list = []
 # name = [
 #     'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5',
 #     'Sensor 6', 'Sensor 7', 'Sensor 8', 'Sensor 9', 'Sensor 10'
 # ]
-name = [
-    'Time Stamp', 'Sensor 1', 'Sensor 2', 'Sensor 3'
-]
+name = ["Time Stamp", "Sensor 1", "Sensor 2", "Sensor 3"]
 # name = ['Time Stamp', 'Sensor 1', 'Sensor 2',
 # 'Sensor 3', 'Sensor 4', 'Sensor 5', 'Sensor 6']
 
 
 def distance(b_1, b_0, p=1):
-    return np.sum(np.abs(b_0-b_1)**p)**(1/p)
+    return np.sum(np.abs(b_0 - b_1) ** p) ** (1 / p)
+
 
 @atexit.register
 def clean():
     print("Output csv")
     test = pd.DataFrame(columns=name, data=result)
-    gesture_name = "12-25_no-touching"
-    if not os.path.exists(f"datasets/{gesture_name}"):
-        os.makedirs(f"datasets/{gesture_name}")
-    test.to_csv(
-        f"datasets/{gesture_name}/{gesture_name}-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.csv"
-    )
+    gesture_path = f"datasets/{user_id}/{task}/{gesture_name}"
+    if not os.path.exists(gesture_path):
+        os.makedirs(gesture_path)
+    test.to_csv(f"{gesture_path}/{gesture_name}-{facing}-{format_current_time()}.csv")
     print("Exited")
 
 
@@ -71,38 +82,64 @@ def notification_handler(sender, data):
     global env_mag
     global readings_queue
     global filtered_sensors
+    global result_queue
+    global min_result_len
+    global test_list
     current = [datetime.datetime.now()]
     for i in range(num):
-        sensors[i, 0] = struct.unpack('f', data[12 * i:12 * i + 4])[0]
-        sensors[i, 1] = struct.unpack('f', data[12 * i + 4:12 * i + 8])[0]
-        sensors[i, 2] = struct.unpack('f', data[12 * i + 8:12 * i + 12])[0]
+        sensors[i, 0] = struct.unpack("f", data[12 * i : 12 * i + 4])[0]
+        sensors[i, 1] = struct.unpack("f", data[12 * i + 4 : 12 * i + 8])[0]
+        sensors[i, 2] = struct.unpack("f", data[12 * i + 8 : 12 * i + 12])[0]
 
-        sensors[i,:] = (sensors[i, :] - offset[i])/scale[i]
+        sensors[i, :] = (sensors[i, :] - offset[i]) / scale[i]
 
-        print(f"Sensor {i+1}: {sensors[i, 0]:.6f}, {sensors[i, 1]:.6f}, {sensors[i, 2]:.6f}")
-        current.append("(" + str(sensors[i, 0]) + ", " + str(sensors[i, 1]) +
-                       ", " + str(sensors[i, 2]) + ")")
-    filtered_sensors = (1-filter_alpha)*sensors + (filter_alpha)*filtered_sensors
-    if (distance(filtered_sensors[0,:], filtered_sensors[-1,:], 2)>threshold):
+        print(
+            f"Sensor {i+1}: {sensors[i, 0]:.6f}, {sensors[i, 1]:.6f}, {sensors[i, 2]:.6f}"
+        )
+        current.append(
+            "("
+            + str(sensors[i, 0])
+            + ", "
+            + str(sensors[i, 1])
+            + ", "
+            + str(sensors[i, 2])
+            + ")"
+        )
+    filtered_sensors = (1 - filter_alpha) * sensors + (filter_alpha) * filtered_sensors
+    if distance(filtered_sensors[0, :], filtered_sensors[-1, :], 2) > threshold:
         print("YES")
         print(f"envmag is {env_mag}")
         near_mag = True
-        env_mag = env_readings_queue[0]
+        env_mag = env_readings_queue[0].mean(axis=0)
         readings_queue.append(filtered_sensors.copy())
-        if len(readings_queue)==window_size:
-            res = classify(net ,svc, np.array(readings_queue), label_encoder)
-            print(f"result is {res}")
+        if len(readings_queue) == window_size:
+            res = classify(net, svc, np.array(readings_queue)-env_mag[np.newaxis,np.newaxis,:], label_encoder)[0]
+            print(f"this window is {res}")
+            result_queue.append(res)
     else:
         print("NO")
         env_readings_queue.append(filtered_sensors)
         near_mag = False
         readings_queue.clear()
+        if len(result_queue) >= min_result_len:
+            # majority vote over result queue
+            whole_result = majority_vote(result_queue)
+            pprint(result_queue)
+            print(f"majority result over the last window is {whole_result}")
+            test_list.append(whole_result)
+
+        result_queue.clear()
+
         # env_mag = alpha*env_mag+(1-alpha)*readings_queue[0]
-    for i in range(num):
-        print(f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}")
-    
+    # hide the filtered sensor since that's too much info on the terminal
+    # for i in range(num):
+    #     print(
+    #         f"Filtered Sensor {i+1}: {filtered_sensors[i, 0]:.6f}, {filtered_sensors[i, 1]:.6f}, {filtered_sensors[i, 2]:.6f}"
+    #     )
+
     # battery_voltage = struct.unpack('f', data[12 * num: 12 * num + 4])[0]
     # print("Battery voltage: " + str(battery_voltage))
+    print(f"the test result is {test_list}")
     print("############")
     result.append(current)
 
@@ -122,25 +159,31 @@ async def run(address, loop):
 
 async def main():
     global address
-    await asyncio.gather(
-        asyncio.create_task(run(address, asyncio.get_event_loop())))
+    await asyncio.gather(asyncio.create_task(run(address, asyncio.get_event_loop())))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # address = ("D4:6B:83:ab:C5:F2")  # circle board
     # address = ("C2:3C:D5:6E:35:0A")  # joint board 2
-    address = "E8:71:7E:9D:FB:53" # 3 sensor board
+    address = "E8:71:7E:9D:FB:53"  # 3 sensor board
     num = 3
-    file_folder = "mytest"
-    offset_path = os.path.join(file_folder,
-        find_latest_file_with_prefix_and_suffix(file_folder,"offset-"))
-    scale_path = os.path.join(file_folder,
-        find_latest_file_with_prefix_and_suffix(file_folder,"scale-"))
+    calib_file_folder = "calibration_files"
+    offset_path = os.path.join(
+        calib_file_folder,
+        find_latest_file_with_prefix_and_suffix(calib_file_folder, "offset-"),
+    )
+    scale_path = os.path.join(
+        calib_file_folder,
+        find_latest_file_with_prefix_and_suffix(calib_file_folder, "scale-"),
+    )
     offset = np.load(offset_path)
     scale = np.load(scale_path)
 
-    net = load_net("Codes/read_raw_ble/models/net", "3_sensor_real_time_", ".pth")
-    label_encoder = load_label_encoder("Codes/read_raw_ble/models/label_encoder", "label_encoder-", ".joblib")
-    svc = load_svc("Codes/read_raw_ble/models/svc", "svc-", ".joblib")
+    model_path = f"Codes/read_raw_ble/models/{user_id}/{task}"
+    net = load_net(f"{model_path}/net", "net_", ".pth")
+    label_encoder = load_label_encoder(
+        f"{model_path}/label_encoder", "label_encoder-", ".joblib"
+    )
+    svc = load_svc(f"{model_path}/svc", "svc-", ".joblib")
     print("loading done")
     asyncio.run(main())

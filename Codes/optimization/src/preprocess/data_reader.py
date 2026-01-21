@@ -197,9 +197,10 @@ class Reading_Data(object):
 
 
 class Calibrate_Data:
-    def __init__(self, data_path):
+    def __init__(self, data_path, calibration_output_path="calibration_files"):
         super().__init__()
         self.df = pd.read_csv(data_path)
+        self.calib_path = calibration_output_path
         if "IMU" in self.df.columns:
             self.df = self.df.drop(["IMU"], axis=1)
         self.build_dict()
@@ -316,8 +317,8 @@ class Calibrate_Data:
         # scale = scale.reshape(1, -1)
         # wsy0227 save to numpy
         current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        np.save(f"mytest/offset-{current_time}.npy", offset)
-        np.save(f"mytest/scale-{current_time}", scale)
+        np.save(f"{self.calib_path}/offset-{current_time}", offset)
+        np.save(f"{self.calib_path}/scale-{current_time}", scale)
         return [offset, scale]
 
     def show_cali_result(self):
