@@ -63,8 +63,15 @@ def classify_3_stack(net, svc, window, label_encoder=None):
     return ans
 
 
-# count over queue
-def queue_count(queue):
+def queue_count(queue: "deque") -> dict:
+    """Counts the occurrences of each item in a queue.
+
+    Args:
+        queue: A deque or other iterable containing items to be counted.
+
+    Returns:
+        A dictionary mapping each unique item to its count.
+    """
     counter = Counter(queue)
     return dict(counter)
 
