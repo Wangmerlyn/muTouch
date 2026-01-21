@@ -77,5 +77,7 @@ def queue_count(queue: "deque") -> dict:
 
 
 def majority_vote(queue):
+    if not queue:
+        return None
     counter = Counter(queue)
     return counter.most_common(1)[0][0]
