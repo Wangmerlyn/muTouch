@@ -78,6 +78,16 @@ def queue_count(queue: "deque") -> dict:
 
 def majority_vote(queue):
     if not queue:
+def majority_vote(queue: "deque") -> "any":
+    """Determines the most common element in a queue.
+
+    Args:
+        queue: A deque containing the elements.
+
+    Returns:
+        The most common element in the queue, or None if the queue is empty.
+    """
+    if not queue:
         return None
     counter = Counter(queue)
     return counter.most_common(1)[0][0]
