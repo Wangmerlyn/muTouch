@@ -51,7 +51,7 @@ def classify(net, svc, window, label_encoder=None):
 
 
 def classify_3_stack(net, svc, window, label_encoder=None):
-    sm_kernel = math.ceil(window.shape[0] / 3)
+    segment_length = math.ceil(window.shape[0] / 3)
     embedding = net.encode(window.reshape(-1, 9)[np.newaxis,:,:]).squeeze()
     start_emb = np.max(embedding[:sm_kernel], axis=0)
     mid_emb = np.max(embedding[sm_kernel : 2 * sm_kernel], axis=0)
