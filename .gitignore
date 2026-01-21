@@ -183,3 +183,7 @@ Codes/leap_motion/Leap.py
 datasets/
 mytest/
 AGENTS.md
+
+# model artifacts
+**/*.joblib
+**/*.pth
