@@ -4,14 +4,14 @@ bioinfokit
 DateTime
 filterpy
 pandas
-matplotlib 
+matplotlib
 lmfit
 numpy
 scikit-learn
 scipy
 seaborn
 Send2Trash
-six 
+six
 sklearn
 sympy
 parse

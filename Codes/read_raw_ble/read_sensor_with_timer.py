@@ -1,9 +1,9 @@
 """
 sensor reading for a given time span
 """
+
 import asyncio
 from read_sensor import run
-import keyboard
 
 
 async def timer(timeout):
@@ -21,7 +21,8 @@ async def main():
     try:
         await asyncio.gather(
             asyncio.create_task(run(ADDRESS, asyncio.get_event_loop())),
-            timer(time_window))
+            timer(time_window),
+        )
 
     except asyncio.CancelledError:
         print("stopped")

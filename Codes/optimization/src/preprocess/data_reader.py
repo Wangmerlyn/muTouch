@@ -135,9 +135,7 @@ class Reading_Data(object):
             for i in range(self.nSensor):
                 readings.append(
                     np.stack(
-                        self.df["Sensor {}".format(i + 1)]
-                        .map(data_mapping)
-                        .to_numpy()
+                        self.df["Sensor {}".format(i + 1)].map(data_mapping).to_numpy()
                     )
                 )
             self.raw_readings = np.concatenate(readings, axis=1)
@@ -241,9 +239,7 @@ class Calibrate_Data:
             for i in range(self.nSensor):
                 readings.append(
                     np.stack(
-                        self.df["Sensor {}".format(i + 1)]
-                        .map(data_mapping)
-                        .to_numpy()
+                        self.df["Sensor {}".format(i + 1)].map(data_mapping).to_numpy()
                     )
                 )
             self.raw_readings = np.concatenate(readings, axis=1)
@@ -292,21 +288,18 @@ class Calibrate_Data:
                     mag[:, 0],
                     mag[:, 1],
                     mag[:, 2],
-                    -mag[:, 1] ** 2,
-                    -mag[:, 2] ** 2,
+                    -(mag[:, 1] ** 2),
+                    -(mag[:, 2] ** 2),
                     np.ones_like(mag[:, 0]),
                 ]
             ).T
             w = mag[:, 0] ** 2
-            tmp = np.matmul(np.linalg.inv(np.matmul(H.T, H)), H.T)
             X = np.matmul(np.linalg.inv(np.matmul(H.T, H)), H.T).dot(w)
             # print(X.shape)
             offX[i] = X[0] / 2
             offY[i] = X[1] / (2 * X[3])
             offZ[i] = X[2] / (2 * X[4])
-            temp = (
-                X[5] + offX[i] ** 2 + X[3] * offY[i] ** 2 + X[4] * offZ[i] ** 2
-            )
+            temp = X[5] + offX[i] ** 2 + X[3] * offY[i] ** 2 + X[4] * offZ[i] ** 2
             scaleX[i] = np.sqrt(temp)
             scaleY[i] = np.sqrt(temp / X[3])
             scaleZ[i] = np.sqrt(temp / X[4])

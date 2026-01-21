@@ -11,5 +11,5 @@ products from Adafruit!
 
 ## About this Driver
 
-Written by Kevin Townsend for Adafruit Industries.  
+Written by Kevin Townsend for Adafruit Industries.
 MIT license, all text above must be included in any redistribution

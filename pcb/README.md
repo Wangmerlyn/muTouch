@@ -10,5 +10,3 @@ We utilize Altium Designer (version 20.0.13) to design PCB boards. The component
 
 ## Assembly
 We use 9 separate pin headers to join the two boards together. A common 3-pin linear regulator is used to stabilize the output voltage, which is set to 3.3v. A 16-pin female header and a 12-pin female header are welded to the bottom board to connect the Bluefruit nRF52 Feather.
-
-

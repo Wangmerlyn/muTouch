@@ -1,6 +1,7 @@
 """
 Find all the devices that are available to connect to.
 """
+
 import asyncio
 from bleak import discover
 
