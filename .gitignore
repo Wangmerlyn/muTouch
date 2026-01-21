@@ -191,3 +191,7 @@ dev_temp/
 # dev tools
 sender.sh
 receiver.sh
+
+# model artifacts
+**/*.joblib
+**/*.pth
