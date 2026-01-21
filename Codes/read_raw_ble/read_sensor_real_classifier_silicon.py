@@ -1,23 +1,16 @@
 import asyncio
-from cProfile import label
-from cgi import test
 import os
 import struct
-import sys
-import time
 import datetime
 import atexit
-import time
 import numpy as np
-from utils.misc import format_current_time
-from classification import classify
-from classification.classify import load_label_encoder, load_net, load_svc, classify
-from bleak import BleakClient
-import matplotlib.pyplot as plt
-from bleak import exc
-import pandas as pd
-import atexit
 from collections import deque
+
+import pandas as pd
+from bleak import BleakClient
+
+from classification.classify import load_label_encoder, load_net, load_svc, classify
+from utils.misc import format_current_time
 from utils.read_files import find_latest_file_with_prefix_and_suffix
 
 # Nordic NUS characteristic for RX, which should be writable`
@@ -41,7 +34,6 @@ threshold = 0.3
 env_delay = 16
 window_size = 64
 env_mag = np.zeros((3))
-near_mag = False
 readings_queue = deque(np.zeros(3), maxlen=window_size)
 env_readings_queue = deque(np.zeros(3), maxlen=env_delay)
 alpha = 0.5
@@ -105,10 +97,12 @@ def notification_handler(sender, data):
             + ")"
         )
     filtered_sensors = (1 - filter_alpha) * sensors + (filter_alpha) * filtered_sensors
-    if distance(filtered_sensors[0, :], filtered_sensors[-1, :], 2) > threshold:
+    has_motion = (
+        distance(filtered_sensors[0, :], filtered_sensors[-1, :], 2) > threshold
+    )
+    if has_motion:
         print("YES")
         print(f"envmag is {env_mag}")
-        near_mag = True
         env_mag = env_readings_queue[0]
         readings_queue.append(filtered_sensors.copy())
         if len(readings_queue) == window_size:
@@ -117,8 +111,6 @@ def notification_handler(sender, data):
             print("Window full")
     else:
         if len(readings_queue) > min_window_len:
-            from sklearn.preprocessing import StandardScaler
-            scaler = StandardScaler(with_mean=False)
             print(np.array(readings_queue))
             # res = classify(net, svc, scaler.fit_transform(np.array(readings_queue).reshape(-1,9)).reshape(-1,3,3), label_encoder)[0]
             res = classify(net, svc, (np.array(readings_queue)), label_encoder)[0]
@@ -130,7 +122,6 @@ def notification_handler(sender, data):
         print("NO")
         print(f"last result is {res}")
         env_readings_queue.append(filtered_sensors)
-        near_mag = False
         readings_queue.clear()
         # env_mag = alpha*env_mag+(1-alpha)*readings_queue[0]
     # hide the filtered sensor since that's too much info on the terminal

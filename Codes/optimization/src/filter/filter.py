@@ -1,22 +1,11 @@
 import numpy as np
-from numpy.random import randn
-from filterpy.common import Q_discrete_white_noise
-from filterpy.kalman import KalmanFilter, unscented_transform
-from filterpy.kalman import UnscentedKalmanFilter as UKF
-from filterpy.kalman import MerweScaledSigmaPoints
-import math
 from scipy.signal import butter, lfilter
-from scipy.signal import freqs
-import sympy as sp
-
-from lmfit import Parameters
-from ..solver import Solver_jac
 
 
 def butter_lowpass(cutoff, fs, order=5):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='low', analog=False)
+    b, a = butter(order, normal_cutoff, btype="low", analog=False)
     return b, a
 
 
@@ -49,7 +38,7 @@ def lowpass_filter(data):
     # Demonstrate the use of the filter.
     # First make some data to be filtered.
     T = 5.0  # seconds
-    n = int(T * fs)  # total number of samples
+    _ = int(T * fs)  # total number of samples
     # t = np.linspace(0, T, n, endpoint=False)
     # "Noisy" data.  We want to recover the 1.2 Hz signal from this.
     # data = np.sin(1.2*2*np.pi*t) + 1.5*np.cos(9*2*np.pi*t) + \
@@ -63,7 +52,7 @@ def mean_filter(data, win=3):
     result = data.copy()
     size = data.size
     for i in range(1, size - win + 1):
-        result[i] = np.mean(result[i:i + win])
+        result[i] = np.mean(result[i : i + win])
     return result
 
 
@@ -71,5 +60,5 @@ def median_filter(data, win=3):
     result = data.copy()
     size = data.size
     for i in range(1, size - win + 1):
-        result[i] = np.median(result[i:i + win])
+        result[i] = np.median(result[i : i + win])
     return result

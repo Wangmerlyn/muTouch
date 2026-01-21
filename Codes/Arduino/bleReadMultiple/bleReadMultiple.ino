@@ -34,7 +34,7 @@ void setup()
   // here in case you want to control this LED manually via PIN 19
   Bluefruit.autoConnLed(true);
 
-  // Config the peripheral connection with maximum bandwidth 
+  // Config the peripheral connection with maximum bandwidth
   // more SRAM required by SoftDevice
   // Note: All config***() function must be called before begin()
   Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
@@ -75,7 +75,7 @@ void setup()
       Serial.print(i+1);
       Serial.println(" found ... check your wiring?");
       delayMicroseconds(500);
-    } 
+    }
     Serial.print("Sensor ");
     Serial.print(i+1);
     Serial.println(" found!");
@@ -92,10 +92,10 @@ void setup()
       Serial.println(" reset filter!");
       delayMicroseconds(1000);
     }
-  } 
+  }
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.println("Found all MLX90393 sensors");
-  
+
 }
 
 void startAdv(void)
@@ -110,15 +110,15 @@ void startAdv(void)
   // Secondary Scan Response packet (optional)
   // Since there is no room for 'Name' in Advertising packet
   Bluefruit.ScanResponse.addName();
-  
+
   /* Start Advertising
    * - Enable auto advertising if disconnected
    * - Interval:  fast mode = 20 ms, slow mode = 152.5 ms
    * - Timeout for fast mode is 30 seconds
    * - Start(timeout) with timeout = 0 will advertise forever (until connected)
-   * 
+   *
    * For recommended advertising interval
-   * https://developer.apple.com/library/content/qa/qa1931/_index.html   
+   * https://developer.apple.com/library/content/qa/qa1931/_index.html
    */
   Bluefruit.Advertising.restartOnDisconnect(true);
   Bluefruit.Advertising.setInterval(32, 244);    // in unit of 0.625 ms
@@ -128,14 +128,14 @@ void startAdv(void)
 }
 
 void loop()
-{ 
+{
   int start_time = micros();
    //Serial.println("###################");
    for(int i = 0; i < num; ++i){
       sensor[i].startSingleMeasurement();
       //delayMicroseconds(50);
    }
-   delayMicroseconds(mlx90393_tconv[5][3]*1000+500); 
+   delayMicroseconds(mlx90393_tconv[5][3]*1000+500);
    for(int i = 0; i < num; ++i){
       if(!sensor[i].readMeasurement(&data_array[3*i], &data_array[3*i+1], &data_array[3*i+2])){
         Serial.print("Sensor ");
@@ -145,9 +145,9 @@ void loop()
       }
       delayMicroseconds(700);
     }
-    
+
     // delayMicroseconds(10000);
-    
+
     // Measure battery voltage
     /*
     float measuredvbat = analogRead(A7);

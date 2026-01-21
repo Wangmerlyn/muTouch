@@ -72,13 +72,13 @@ boolean Adafruit_MLX90393::begin_SPI(uint8_t cs_pin, SPIClass *theSPI) {
 
 bool Adafruit_MLX90393::_init(void) {
     //Serial.println("Start");
-    
+
     if (!exitMode()){
         Serial.println("Fail to activate exit mode");
         return false;
     }
-    
-    
+
+
   if (!reset()){
       Serial.println("Fail to activate reset");
       return false;
