@@ -24,7 +24,7 @@ This directory contains code and PCB files for μTouch, as described in:
 1. **Hardware**: assemble the Magway PCB (see `pcb/README.md`) and flash `Codes/Arduino/bleReadMultiple/bleReadMultiple.ino` to the sensing array.
 2. **Find device**: run `Codes/read_raw_ble/find_device.py` to locate your BLE address.
 3. **Collect calibration**: run `Codes/read_raw_ble/read_sensor.py`, set the BLE address and output file name; perform figure‑8 motion away from magnetic interference.
-4. **Run real-time classifier**: use `Codes/read_raw_ble/read_sensor_real.py` (data collection) or `read_sensor_real_classifier.py` (inference). Update offsets/scales to the latest calibration files and adjust model paths if needed.
+4. **Run real-time classifier**: use `Codes/read_raw_ble/read_sensor_real.py` (data collection) or `Codes/read_raw_ble/read_sensor_real_classifier.py` (inference). Update offsets/scales to the latest calibration files and adjust model paths if needed.
 
 ## Development setup
 - Python 3.10 (recommended)  
