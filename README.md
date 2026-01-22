@@ -8,7 +8,7 @@
 - Jingyuan Huang, Jike Wang, Dongyao Chen (Shanghai Jiao Tong University, China)  
 - Cheng Zhang (Cornell University, USA)  
 - Alanson Sample (University of Michigan, USA)  
-- Published at PerCom 2026
+- Published at PerCom 2026 (to appear)
 
 ## Abstract
 > Self-touch gestures (e.g., nuanced facial touches and subtle finger scratches) provide rich insights into human behaviors, from hygiene practices to health monitoring. However, existing approaches fall short in detecting such micro gestures due to their diverse movement patterns.  
@@ -42,11 +42,14 @@ This codebase builds on the MagX project (MobiCom 2021). We retain the legacy Ma
 
 ## Citation (μTouch, PerCom 2026)
 ```bibtex
-@inproceedings{Wang2026muTouch,
-  author    = {Siyuan Wang and Ke Li and Jingyuan Huang and Jike Wang and Cheng Zhang and Alanson Sample and Dongyao Chen},
-  title     = {{\mu}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets},
-  booktitle = {Proc. IEEE PerCom},
-  year      = {2026}
+@inproceedings{mutouch_percom2026,
+  author    = {Wang, Siyuan and Li, Ke and Huang, Jingyuan and Wang, Jike and Zhang, Cheng and Sample, Alanson and Chen, Dongyao},
+  title     = {{\textmu}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets},
+  booktitle = {Proceedings of the IEEE International Conference on Pervasive Computing and Communications (PerCom)},
+  year      = {2026},
+  address   = {Pisa, Italy},
+  month     = mar,
+  note      = {To appear}
 }
 ```
 
