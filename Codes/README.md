@@ -1,22 +1,18 @@
-# All codes for MagX
+# Code Overview (μTouch)
 
 ## Arduino
-1. batteryTest: read battery voltage and level of an Adafruit Feather
-2. bleReadMultiple: read readings from 8 magnetometers and send them via bluetooth
-3. localReadMultiple: read readings from 8 magnetometers and print them in serial port
-4. Library: modified library for Adafruit_MLX90393
-
-## leapmotion
-Code for gathering groundtruth using a Leap Motion Controller. The ground truth is stored in a csv file. Leap Motion 2.7 python SDK must be first installed
+- `batteryTest`: read battery voltage/level of the Adafruit Feather.
+- `bleReadMultiple`: collect readings from the magnetometer array and send via BLE.
+- `localReadMultiple`: stream readings over serial.
+- `Library`: patched Adafruit_MLX90393 driver for better diagnostics.
 
 ## read_raw_ble
-Read measurements from an Adafruit Feather sent by bluetooth. Before reading the measurement using read_sensor.py, use find_device.py to find the address of the device, and change the address in read_sensor.py accordingly
-
-## cpp_solver
-C++ wrapped solver of the LM algorithm.
+- BLE discovery (`find_device.py`), calibration capture (`read_sensor.py`), real-time capture (`read_sensor_real.py`), and online classifiers (`read_sensor_real_classifier.py`, silicon variants).
+- TS2Vec embedding submodule (`ts2vec`) and trained models under `models/`.
+- Utilities for result analysis, timing, and file parsing.
 
 ## optimization
-All codes for finding the optimal layout and tracking magnets. For more detail please refer to the readme file inside the folder.
+- Calibration helpers, feature engineering, and layout/positioning algorithms; see per-module docs inside the folder.
 
 ## requirements.txt
-All python libraries used
+- Python dependency pins used during development; install via `pip install -r Codes/requirements.txt` if you are not using `pip install -e .[dev]`.
