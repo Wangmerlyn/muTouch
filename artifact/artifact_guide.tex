@@ -33,16 +33,16 @@ Cheng Zhang \quad Alanson Sample \quad Dongyao Chen}
   \item Code repo: \href{https://github.com/Wangmerlyn/muTouch}{github.com/Wangmerlyn/muTouch}
   \item MagX base: \href{https://github.com/dychen24/magx}{github.com/dychen24/magx}
   \item Pretrained snapshot: Release tag \texttt{backup/3\_dim-models-20260121} (``Assets'' on GitHub Releases)
-  \item PCB (Magway) sources: \texttt{pcb/} (Altium project by Xiaomeng Chen)
+  \item PCB (muTouch) sources: \texttt{pcb/} (Altium project by Xiaomeng Chen; legacy filenames keep the \texttt{Magway.*} prefix)
 \end{itemize}
 
 \section{Scope}
-This guide describes the artifact supporting \textmu Touch: hardware (Magway PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline.
+This guide describes the artifact supporting \textmu Touch: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline.
 
 \section{Bill of Materials \& Requirements}
 \subsection{Hardware (minimal)}
 \begin{itemize}[leftmargin=*]
-  \item Magway PCB (Altium project in \texttt{pcb/}; assembled board). PCB design by Xiaomeng Chen.
+  \item muTouch PCB (Altium project in \texttt{pcb/}; assembled board; filenames use legacy \texttt{Magway.*}). PCB design by Xiaomeng Chen.
   \item 1\textendash2 passive N52 grade magnets (6--8\,mm recommended).
   \item Host laptop: Ubuntu 20.04+ or macOS 12+, 4-core CPU, $\geq$8\,GB RAM, BLE 4.0+ adapter.
   \item Optional: BLE USB dongle (if desktop lacks BLE).
@@ -102,7 +102,7 @@ Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model
 
 \section{Reproducibility Checklist}
 \begin{itemize}[leftmargin=*]
-  \item \textbf{Hardware reproducible}: PCB sources + BOM (Magway) included.
+  \item \textbf{Hardware reproducible}: PCB sources + BOM (muTouch; files named \texttt{Magway.*} for compatibility) included.
   \item \textbf{Software reproducible}: All scripts + TS2Vec submodule; pinned deps in \texttt{Codes/requirements.txt}.
   \item \textbf{Data}: Calibration and small demo runs can be generated locally; full datasets are participant-specific and not included.
   \item \textbf{Pretrained models}: Provided via GitHub tag \texttt{backup/3\_dim-models-20260121}.

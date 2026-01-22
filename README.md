@@ -18,10 +18,10 @@ This directory contains code and PCB files for μTouch, as described in:
 - **Firmware & data collection**: `Codes/Arduino` sketches and BLE data collection scripts in `Codes/read_raw_ble`.
 - **Models & inference**: real-time classifiers, TS2Vec-based embeddings (submodule), and result analysis tools in `Codes/read_raw_ble`.
 - **Optimization & calibration**: signal processing, calibration, and layout exploration code in `Codes/optimization`.
-- **Hardware**: Magway PCB design package in `pcb/` (Altium project, BoM doc, PnP outputs). PCB design by [Xiaomeng Chen](https://github.com/blankchenxm).
+- **Hardware**: muTouch PCB design package in `pcb/` (Altium project, BoM doc, PnP outputs). PCB design by [Xiaomeng Chen](https://github.com/blankchenxm). *(File names retain the legacy `Magway.*` prefix for tooling compatibility.)*
 
 ## Quick start (edge pipeline)
-1. **Hardware**: assemble the Magway PCB (see `pcb/README.md`) and flash `Codes/Arduino/bleReadMultiple/bleReadMultiple.ino` to the sensing array.
+1. **Hardware**: assemble the muTouch PCB (see `pcb/README.md`) and flash `Codes/Arduino/bleReadMultiple/bleReadMultiple.ino` to the sensing array.
 2. **Find device**: run `Codes/read_raw_ble/find_device.py` to locate your BLE address.
 3. **Collect calibration**: run `Codes/read_raw_ble/read_sensor.py`, set the BLE address and output file name; perform figure‑8 motion away from magnetic interference.
 4. **Run real-time classifier**: use `Codes/read_raw_ble/read_sensor_real.py` (data collection) or `Codes/read_raw_ble/read_sensor_real_classifier.py` (inference). Update offsets/scales to the latest calibration files and adjust model paths if needed.
