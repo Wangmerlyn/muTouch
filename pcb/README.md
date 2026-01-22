@@ -1,6 +1,6 @@
 # Magway PCB Package
 
-This folder contains the current μTouch/Magway board design exported from Altium.
+This folder contains the current μTouch/Magway board design exported from Altium. PCB design by [Xiaomeng Chen](https://github.com/blankchenxm).
 
 ## Contents
 - `Magway.PrjPcb` / `Magway.PrjPcbStructure`: project files.
