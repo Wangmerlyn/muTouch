@@ -18,7 +18,7 @@ This directory contains code and PCB files for μTouch, as described in:
 - **Firmware & data collection**: `Codes/Arduino` sketches and BLE data collection scripts in `Codes/read_raw_ble`.
 - **Models & inference**: real-time classifiers, TS2Vec-based embeddings (submodule), and result analysis tools in `Codes/read_raw_ble`.
 - **Optimization & calibration**: signal processing, calibration, and layout exploration code in `Codes/optimization`.
-- **Hardware**: Magway PCB design package in `pcb/` (Altium project, BoM doc, PnP outputs).
+- **Hardware**: Magway PCB design package in `pcb/` (Altium project, BoM doc, PnP outputs). PCB design by [Xiaomeng Chen](https://github.com/blankchenxm).
 
 ## Quick start (edge pipeline)
 1. **Hardware**: assemble the Magway PCB (see `pcb/README.md`) and flash `Codes/Arduino/bleReadMultiple/bleReadMultiple.ino` to the sensing array.
@@ -37,7 +37,7 @@ This directory contains code and PCB files for μTouch, as described in:
 MIT License (see [LICENSE](LICENSE)).
 
 ## Credits
-This codebase builds on the MagX project (MobiCom 2021). We retain the legacy MagX citation for attribution while extending the system to μTouch’s self-touch sensing pipeline.
+This codebase builds on the MagX project (MobiCom 2021). Source code for MagX is available at https://github.com/dychen24/magx. We retain the legacy MagX citation for attribution while extending the system to μTouch’s self-touch sensing pipeline.
 
 ## Citation (μTouch, PerCom 2026)
 ```bibtex
