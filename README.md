@@ -1,14 +1,13 @@
 # μTouch: Accurate, Lightweight Self-Touch Sensing with Passive Magnets
 
-μTouch is a compact magnetic-sensing platform for recognizing self-touch micro‑gestures (e.g., nuanced face touches or subtle scratches). It combines low‑power magnetometers, magnetic silicon, and a lightweight semi‑supervised pipeline that needs only a few seconds of user data to adapt.
+## About
+This directory contains code and PCB files for μTouch, as described in:
 
-## Authors and venue
-- Siyuan Wang (Shanghai Jiao Tong University, China)  
-- Ke Li (Cornell University, USA)  
-- Jingyuan Huang, Jike Wang, Dongyao Chen (Shanghai Jiao Tong University, China)  
-- Cheng Zhang (Cornell University, USA)  
-- Alanson Sample (University of Michigan, USA)  
-- Published at PerCom 2026 (to appear)
+> [_μTouch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets_]  
+> Siyuan Wang, Ke Li, Jingyuan Huang, Jike Wang, Cheng Zhang, Alanson Sample, Dongyao Chen.  
+> Proceedings of IEEE PerCom 2026 (to appear).
+
+μTouch is a compact magnetic-sensing platform for recognizing self-touch micro‑gestures (e.g., nuanced face touches or subtle scratches). It combines low‑power magnetometers, magnetic silicon, and a lightweight semi‑supervised pipeline that needs only a few seconds of user data to adapt.
 
 ## Abstract
 > Self-touch gestures (e.g., nuanced facial touches and subtle finger scratches) provide rich insights into human behaviors, from hygiene practices to health monitoring. However, existing approaches fall short in detecting such micro gestures due to their diverse movement patterns.  
