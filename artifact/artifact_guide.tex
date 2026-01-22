@@ -5,6 +5,7 @@
 \usepackage{balance}
 \usepackage{pifont}
 \usepackage{amsmath}
+\usepackage{array}
 \usepackage{microtype}
 \usepackage{url}
 \urlstyle{same}
@@ -29,12 +30,14 @@ Cheng Zhang \quad Alanson Sample \quad Dongyao Chen}
 \sloppy
 
 \section*{Quick Links}
-\begin{itemize}[leftmargin=*]
-  \item Code repo: \href{https://github.com/Wangmerlyn/muTouch}{github.com/Wangmerlyn/muTouch}
-  \item MagX base: \href{https://github.com/dychen24/magx}{github.com/dychen24/magx}
-  \item Pretrained snapshot: Release tag \texttt{backup/3\_dim-models-20260121} (``Assets'' on GitHub Releases)
-  \item PCB (muTouch) sources: \texttt{pcb/} (Altium project by Xiaomeng Chen; legacy filenames keep the \texttt{Magway.*} prefix)
-\end{itemize}
+\begin{center}
+\begin{tabular}{@{}p{0.92in}>{\raggedright\arraybackslash}p{2.35in}@{}}
+Code repo & \href{https://github.com/Wangmerlyn/muTouch}{github.com/Wangmerlyn/muTouch} \\
+MagX base & \href{https://github.com/dychen24/magx}{github.com/dychen24/magx} \\
+Models & Tag \texttt{backup/3\_dim-models-20260121} (GitHub Releases $\to$ Assets) \\
+PCB sources & \texttt{pcb/} (muTouch Altium project; legacy \texttt{Magway.*} filenames) \\
+\end{tabular}
+\end{center}
 
 \section{Scope}
 This guide describes the artifact supporting \textmu Touch: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline.
@@ -56,7 +59,7 @@ This guide describes the artifact supporting \textmu Touch: hardware (muTouch PC
 \end{itemize}
 
 \section{Obtaining the Artifact}
-\begin{enumerate}[leftmargin=*]
+\begin{enumerate}[leftmargin=1.2em]
   \item Clone the repository (now public):\\
   \texttt{git clone --recurse-submodules}\\
   \hspace*{1.1em}\texttt{git@github.com:Wangmerlyn/muTouch.git}\\
@@ -71,10 +74,14 @@ This guide describes the artifact supporting \textmu Touch: hardware (muTouch PC
 \end{enumerate}
 
 \section{Setup \& Configuration}
-\begin{enumerate}[leftmargin=*]
-  \item Flash firmware: open \texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino} in Arduino IDE; select Bluefruit nRF52 Feather; upload.
+\begin{enumerate}[leftmargin=1.2em]
+  \item Flash firmware:\\
+  {\scriptsize\texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino}} in Arduino IDE;\\
+  select Feather nRF52; upload.
   \item Find BLE address: \texttt{python Codes/read\_raw\_ble/find\_device.py} (copy device MAC/UUID).
-  \item Calibration: {\small\verb|python Codes/read_raw_ble/read_sensor.py --addr <BLE_ADDR> --out calibration.npy|}\\
+  \item Calibration:\\
+  {\scriptsize\texttt{python Codes/read\_raw\_ble/read\_sensor.py}}\\
+  {\scriptsize\texttt{--addr <BLE\_ADDR> --out calibration.npy}}\\
   Do a brief figure-8 motion away from metal surfaces.
   \item Offsets/scales: place generated \verb|offset-*| and \verb|scale-*| files in \verb|calibration_files/| (or update script paths).
   \item Models: ensure \verb|Codes/read_raw_ble/models/| holds the downloaded checkpoint set if you need pretrained classifiers.
@@ -94,7 +101,7 @@ python Codes/read_raw_ble/read_sensor_real_classifier.py --addr <BLE_ADDR>
 Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files.\\ Console prints detected gesture labels; logs are saved under \texttt{datasets/}.
 
 \subsection{Expected outcomes}
-\begin{itemize}[leftmargin=*]
+\begin{itemize}[leftmargin=1.2em]
   \item Face-touching: $\approx$93\% accuracy (8 gestures) with 3\,s fine-tuning/user.
   \item Scratch detection: $\approx$95\% accuracy across 12 participants.
   \item Real-time loop maintains $>$30\,Hz inference on a laptop CPU.
@@ -113,13 +120,6 @@ Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model
   \item BLE not found: retry \texttt{find\_device.py}; check power and pairing blocks; use BLE dongle.
   \item Drifting predictions: recalibrate sensors; ensure distance from large metal; re-run offset/scale.
   \item Import errors: confirm submodule init (\texttt{git submodule update --init --recursive}) and Python path from repo root.
-\end{itemize}
-
-\section{Time Budget for Reviewers}
-\begin{itemize}[leftmargin=*]
-  \item Setup environment: 10--15 minutes.
-  \item Flash firmware + calibration: 15 minutes.
-  \item Run live classification demo: 5 minutes.
 \end{itemize}
 
 \section{Notes on Prior Work}
