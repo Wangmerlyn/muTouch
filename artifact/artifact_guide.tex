@@ -1,23 +1,40 @@
 \documentclass[10pt,conference]{IEEEtran}
 \IEEEoverridecommandlockouts
-\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{enumitem}
 \usepackage{balance}
 \usepackage{pifont}
 \usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{url}
+\urlstyle{same}
+% Load hyperref last to avoid clashes
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=MidnightBlue,urlcolor=BrickRed]{hyperref}
 
 \newcommand{\cmark}{\ding{51}}
 \newcommand{\xmark}{\ding{55}}
 
 \title{\textmu Touch Artifact Guide}
 
-\author{
-  Siyuan Wang, Ke Li, Jingyuan Huang, Jike Wang, Cheng Zhang, Alanson Sample, Dongyao Chen\\
-  (Artifacts correspond to the PerCom'26 paper ``\textmu Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets'')
-}
+\author{\IEEEauthorblockN{Siyuan Wang \quad Ke Li \quad Jingyuan Huang \quad Jike Wang\\
+Cheng Zhang \quad Alanson Sample \quad Dongyao Chen}
+\IEEEauthorblockA{Artifacts for ``\textmu Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets'' (PerCom'26)}}
 
 \begin{document}
+\hypersetup{
+  pdftitle={\textmu Touch Artifact Guide},
+  pdfauthor={Siyuan Wang, Ke Li, Jingyuan Huang, Jike Wang, Cheng Zhang, Alanson Sample, Dongyao Chen}
+}
 \maketitle
+\sloppy
+
+\section*{Quick Links}
+\begin{itemize}[leftmargin=*]
+  \item Code repo: \href{https://github.com/Wangmerlyn/muTouch}{github.com/Wangmerlyn/muTouch}
+  \item MagX base: \href{https://github.com/dychen24/magx}{github.com/dychen24/magx}
+  \item Pretrained snapshot: Release tag \texttt{backup/3\_dim-models-20260121} (``Assets'' on GitHub Releases)
+  \item PCB (Magway) sources: \texttt{pcb/} (Altium project by Xiaomeng Chen)
+\end{itemize}
 
 \section{Scope}
 This guide describes the artifact supporting \textmu Touch: hardware (Magway PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline.
@@ -41,34 +58,40 @@ This guide describes the artifact supporting \textmu Touch: hardware (Magway PCB
 \section{Obtaining the Artifact}
 \begin{enumerate}[leftmargin=*]
   \item Clone the repository (now public):\\
-  \texttt{git clone --recurse-submodules git@github.com:Wangmerlyn/muTouch.git}\\
-  (HTTPS alternative for CI: \texttt{https://github.com/Wangmerlyn/muTouch.git})
-  \item Activate env: \texttt{conda create -n muTouch python=3.10; conda activate muTouch}
-  \item Install deps: \texttt{pip install -e .[dev]; pre-commit install} (optional for lint).
-  \item Models: a full model snapshot is tagged at \texttt{backup/3\_dim-models-20260121}. Download from GitHub Releases or checkout tag if needed for offline use.
+  \texttt{git clone --recurse-submodules}\\
+  \hspace*{1.1em}\texttt{git@github.com:Wangmerlyn/muTouch.git}\\
+  (HTTPS fallback:\\ \texttt{https://github.com/Wangmerlyn/muTouch.git})
+\item Activate env:\\
+  \texttt{conda create -n muTouch python=3.10}\\
+  \texttt{conda activate muTouch}
+\item Install deps:\\
+  \texttt{pip install -e .[dev]}\\
+  \texttt{pre-commit install} \,(optional for lint).
+\item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \end{enumerate}
 
 \section{Setup \& Configuration}
 \begin{enumerate}[leftmargin=*]
-  \item Flash firmware: open \texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino} in Arduino IDE, target Bluefruit nRF52 Feather, and upload.
-  \item Find BLE address: \verb|python Codes/read_raw_ble/find_device.py|; copy device MAC/UUID.
-  \item Calibration: \verb|python Codes/read_raw_ble/read_sensor.py --addr <BLE_ADDR> --out calibration.npy|; perform figure-8 motions away from metal.
-  \item Offsets/scales: place generated \verb|offset-*|, \verb|scale-*| in \verb|calibration_files/| (or update paths in the scripts).
-  \item Models: ensure \verb|Codes/read_raw_ble/models/| contains the downloaded checkpoint set if you need pretrained classifiers.
+  \item Flash firmware: open \texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino} in Arduino IDE; select Bluefruit nRF52 Feather; upload.
+  \item Find BLE address: \texttt{python Codes/read\_raw\_ble/find\_device.py} (copy device MAC/UUID).
+  \item Calibration: {\small\verb|python Codes/read_raw_ble/read_sensor.py --addr <BLE_ADDR> --out calibration.npy|}\\
+  Do a brief figure-8 motion away from metal surfaces.
+  \item Offsets/scales: place generated \verb|offset-*| and \verb|scale-*| files in \verb|calibration_files/| (or update script paths).
+  \item Models: ensure \verb|Codes/read_raw_ble/models/| holds the downloaded checkpoint set if you need pretrained classifiers.
 \end{enumerate}
 
 \section{Running the Artifact}
 \subsection{Data capture}
-\begin{verbatim}
+{\small\begin{verbatim}
 python Codes/read_raw_ble/read_sensor_real.py --addr <BLE_ADDR>
-\end{verbatim}
+\end{verbatim}}
 Outputs timestamped CSVs under \texttt{datasets/}.
 
 \subsection{Real-time classification}
-\begin{verbatim}
+{\small\begin{verbatim}
 python Codes/read_raw_ble/read_sensor_real_classifier.py --addr <BLE_ADDR>
-\end{verbatim}
-Ensure the script points to the latest \texttt{offset-*}, \texttt{scale-*}, and model files. Console prints detected gesture labels; logs are saved under \texttt{datasets/}.
+\end{verbatim}}
+Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files.\\ Console prints detected gesture labels; logs are saved under \texttt{datasets/}.
 
 \subsection{Expected outcomes}
 \begin{itemize}[leftmargin=*]
@@ -100,7 +123,7 @@ Ensure the script points to the latest \texttt{offset-*}, \texttt{scale-*}, and 
 \end{itemize}
 
 \section{Notes on Prior Work}
-The project builds on MagX (MobiCom'21) codebase for magnetic sensing; source: \url{https://github.com/dychen24/magx}. This artifact extends it to self-touch sensing and includes updated PCB by Xiaomeng Chen.
+The project builds on MagX (MobiCom'21) codebase for magnetic sensing; source: \href{https://github.com/dychen24/magx}{https://github.com/dychen24/magx}. This artifact extends it to self-touch sensing and includes updated PCB by Xiaomeng Chen.
 
 \balance
 \end{document}
