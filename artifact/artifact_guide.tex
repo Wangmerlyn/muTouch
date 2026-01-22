@@ -1,0 +1,106 @@
+\documentclass[10pt,conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{balance}
+\usepackage{pifont}
+\usepackage{amsmath}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+\title{\textmu Touch Artifact Guide}
+
+\author{
+  Siyuan Wang, Ke Li, Jingyuan Huang, Jike Wang, Cheng Zhang, Alanson Sample, Dongyao Chen\\
+  (Artifacts correspond to the PerCom'26 paper ``\textmu Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets'')
+}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This guide describes the artifact supporting \textmu Touch: hardware (Magway PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline.
+
+\section{Bill of Materials \& Requirements}
+\subsection{Hardware (minimal)}
+\begin{itemize}[leftmargin=*]
+  \item Magway PCB (Altium project in \texttt{pcb/}; assembled board). PCB design by Xiaomeng Chen.
+  \item 1\textendash2 passive N52 grade magnets (6--8\,mm recommended).
+  \item Host laptop: Ubuntu 20.04+ or macOS 12+, 4-core CPU, $\geq$8\,GB RAM, BLE 4.0+ adapter.
+  \item Optional: BLE USB dongle (if desktop lacks BLE).
+\end{itemize}
+\subsection{Software}
+\begin{itemize}[leftmargin=*]
+  \item Python 3.10; Conda recommended.
+  \item Git with submodules; CMake/Make (only if rebuilding C++ solver).
+  \item Dependencies from \texttt{pip install -e .[dev]}.
+  \item Latex/PDF tools not required for runtime; only for this guide.
+\end{itemize}
+
+\section{Obtaining the Artifact}
+\begin{enumerate}[leftmargin=*]
+  \item Clone the repository (now public):\\
+  \texttt{git clone --recurse-submodules git@github.com:Wangmerlyn/muTouch.git}\\
+  (HTTPS alternative for CI: \texttt{https://github.com/Wangmerlyn/muTouch.git})
+  \item Activate env: \texttt{conda create -n muTouch python=3.10; conda activate muTouch}
+  \item Install deps: \texttt{pip install -e .[dev]; pre-commit install} (optional for lint).
+  \item Models: a full model snapshot is tagged at \texttt{backup/3\_dim-models-20260121}. Download from GitHub Releases or checkout tag if needed for offline use.
+\end{enumerate}
+
+\section{Setup \& Configuration}
+\begin{enumerate}[leftmargin=*]
+  \item Flash firmware: open \texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino} in Arduino IDE, target Bluefruit nRF52 Feather, and upload.
+  \item Find BLE address: \verb|python Codes/read_raw_ble/find_device.py|; copy device MAC/UUID.
+  \item Calibration: \verb|python Codes/read_raw_ble/read_sensor.py --addr <BLE_ADDR> --out calibration.npy|; perform figure-8 motions away from metal.
+  \item Offsets/scales: place generated \verb|offset-*|, \verb|scale-*| in \verb|calibration_files/| (or update paths in the scripts).
+  \item Models: ensure \verb|Codes/read_raw_ble/models/| contains the downloaded checkpoint set if you need pretrained classifiers.
+\end{enumerate}
+
+\section{Running the Artifact}
+\subsection{Data capture}
+\begin{verbatim}
+python Codes/read_raw_ble/read_sensor_real.py --addr <BLE_ADDR>
+\end{verbatim}
+Outputs timestamped CSVs under \texttt{datasets/}.
+
+\subsection{Real-time classification}
+\begin{verbatim}
+python Codes/read_raw_ble/read_sensor_real_classifier.py --addr <BLE_ADDR>
+\end{verbatim}
+Ensure the script points to the latest \texttt{offset-*}, \texttt{scale-*}, and model files. Console prints detected gesture labels; logs are saved under \texttt{datasets/}.
+
+\subsection{Expected outcomes}
+\begin{itemize}[leftmargin=*]
+  \item Face-touching: $\approx$93\% accuracy (8 gestures) with 3\,s fine-tuning/user.
+  \item Scratch detection: $\approx$95\% accuracy across 12 participants.
+  \item Real-time loop maintains $>$30\,Hz inference on a laptop CPU.
+\end{itemize}
+
+\section{Reproducibility Checklist}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Hardware reproducible}: PCB sources + BOM (Magway) included.
+  \item \textbf{Software reproducible}: All scripts + TS2Vec submodule; pinned deps in \texttt{Codes/requirements.txt}.
+  \item \textbf{Data}: Calibration and small demo runs can be generated locally; full datasets are participant-specific and not included.
+  \item \textbf{Pretrained models}: Provided via GitHub tag \texttt{backup/3\_dim-models-20260121}.
+\end{itemize}
+
+\section{Troubleshooting}
+\begin{itemize}[leftmargin=*]
+  \item BLE not found: retry \texttt{find\_device.py}; check power and pairing blocks; use BLE dongle.
+  \item Drifting predictions: recalibrate sensors; ensure distance from large metal; re-run offset/scale.
+  \item Import errors: confirm submodule init (\texttt{git submodule update --init --recursive}) and Python path from repo root.
+\end{itemize}
+
+\section{Time Budget for Reviewers}
+\begin{itemize}[leftmargin=*]
+  \item Setup environment: 10--15 minutes.
+  \item Flash firmware + calibration: 15 minutes.
+  \item Run live classification demo: 5 minutes.
+\end{itemize}
+
+\section{Notes on Prior Work}
+The project builds on MagX (MobiCom'21) codebase for magnetic sensing; source: \url{https://github.com/dychen24/magx}. This artifact extends it to self-touch sensing and includes updated PCB by Xiaomeng Chen.
+
+\balance
+\end{document}
