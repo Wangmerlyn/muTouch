@@ -61,15 +61,22 @@ This guide describes the artifact supporting \textmu Touch: hardware (muTouch PC
 \section{Obtaining the Artifact}
 \begin{enumerate}[leftmargin=1.2em]
   \item Clone the repository (now public):\\
-  \texttt{git clone --recurse-submodules}\\
-  \hspace*{1.1em}\texttt{git@github.com:Wangmerlyn/muTouch.git}\\
-  (HTTPS fallback:\\ \texttt{https://github.com/Wangmerlyn/muTouch.git})
+  {\small\begin{verbatim}
+git clone --recurse-submodules \
+  git@github.com:Wangmerlyn/muTouch.git
+# HTTPS fallback:
+# https://github.com/Wangmerlyn/muTouch.git
+\end{verbatim}}
 \item Activate env:\\
-  \texttt{conda create -n muTouch python=3.10}\\
-  \texttt{conda activate muTouch}
+  {\small\begin{verbatim}
+conda create -n muTouch python=3.10
+conda activate muTouch
+\end{verbatim}}
 \item Install deps:\\
-  \texttt{pip install -e .[dev]}\\
-  \texttt{pre-commit install} \,(optional for lint).
+  {\small\begin{verbatim}
+pip install -e .[dev]
+pre-commit install   # optional for lint
+\end{verbatim}}
 \item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \end{enumerate}
 
