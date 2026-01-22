@@ -6,11 +6,24 @@
 \usepackage{pifont}
 \usepackage{amsmath}
 \usepackage{array}
+\usepackage{listings}
 \usepackage{microtype}
 \usepackage{url}
 \urlstyle{same}
 % Load hyperref last to avoid clashes
 \usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=MidnightBlue,urlcolor=BrickRed]{hyperref}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  numbers=left,
+  numberstyle=\tiny,
+  frame=single,
+  showstringspaces=false,
+  breaklines=true,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{orange}
+}
 
 \newcommand{\cmark}{\ding{51}}
 \newcommand{\xmark}{\ding{55}}
@@ -71,22 +84,21 @@ This guide describes the artifact supporting \textmu Touch: hardware (muTouch PC
 \section{Obtaining the Artifact}
 \begin{enumerate}[leftmargin=1.2em]
   \item Clone the repository (now public):\\
-  {\small\begin{verbatim}
-git clone --recurse-submodules \
-  git@github.com:Wangmerlyn/muTouch.git
+  \begin{lstlisting}[language=bash,numbers=none]
+git clone --recurse-submodules git@github.com:Wangmerlyn/muTouch.git
 # HTTPS fallback:
 # https://github.com/Wangmerlyn/muTouch.git
-\end{verbatim}}
+  \end{lstlisting}
 \item Activate env:\\
-  {\small\begin{verbatim}
+  \begin{lstlisting}[language=bash,numbers=none]
 conda create -n muTouch python=3.10
 conda activate muTouch
-\end{verbatim}}
+  \end{lstlisting}
 \item Install deps:\\
-  {\small\begin{verbatim}
+  \begin{lstlisting}[language=bash,numbers=none]
 pip install -e .[dev]
 pre-commit install   # optional for lint
-\end{verbatim}}
+  \end{lstlisting}
 \item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \end{enumerate}
 
@@ -97,8 +109,10 @@ pre-commit install   # optional for lint
   select Feather nRF52; upload.
   \item Find BLE address: \texttt{python Codes/read\_raw\_ble/find\_device.py} (copy device MAC/UUID).
   \item Calibration:\\
-  {\scriptsize\texttt{python Codes/read\_raw\_ble/read\_sensor.py}}\\
-  {\scriptsize\texttt{--addr <BLE\_ADDR> --out calibration.npy}}\\
+  \begin{lstlisting}[language=bash,numbers=none]
+python Codes/read_raw_ble/read_sensor.py \
+  --addr <BLE_ADDR> --out calibration.npy
+  \end{lstlisting}
   Do a brief figure-8 motion away from metal surfaces.
   \item Offsets/scales: place generated \verb|offset-*| and \verb|scale-*| files in \verb|calibration_files/| (or update script paths).
   \item Models: ensure \verb|Codes/read_raw_ble/models/| holds the downloaded checkpoint set if you need pretrained classifiers.
@@ -106,15 +120,15 @@ pre-commit install   # optional for lint
 
 \section{Running the Artifact}
 \subsection{Data capture}
-{\small\begin{verbatim}
+\begin{lstlisting}[language=bash,numbers=none]
 python Codes/read_raw_ble/read_sensor_real.py --addr <BLE_ADDR>
-\end{verbatim}}
+\end{lstlisting}
 Outputs timestamped CSVs under \texttt{datasets/}.
 
 \subsection{Real-time classification}
-{\small\begin{verbatim}
+\begin{lstlisting}[language=bash,numbers=none]
 python Codes/read_raw_ble/read_sensor_real_classifier.py --addr <BLE_ADDR>
-\end{verbatim}}
+\end{lstlisting}
 Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files.\\ Console prints detected gesture labels; logs are saved under \texttt{datasets/}.
 
 \subsection{Expected outcomes}
