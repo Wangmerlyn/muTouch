@@ -196,3 +196,7 @@ receiver.sh
 # model artifacts
 **/*.joblib
 **/*.pth
+
+# artifact submission bundle (keep guide only; paper is private)
+artifact/prelim_paper.pdf
+artifact/mutouch_artifact_bundle.pdf
