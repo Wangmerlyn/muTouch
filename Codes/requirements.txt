@@ -12,9 +12,11 @@ scipy
 seaborn
 Send2Trash
 six
-sklearn
 sympy
 parse
 torchsummary
 tensorboard
 tensorboardx
+torch==1.8.1
+bottleneck==1.3.2
+statsmodels==0.12.2

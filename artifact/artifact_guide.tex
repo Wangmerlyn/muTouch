@@ -1,4 +1,4 @@
-\documentclass[10pt,conference]{IEEEtran}
+\documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 \usepackage[dvipsnames]{xcolor}
 \usepackage{enumitem}
@@ -96,8 +96,7 @@ conda activate muTouch
   \end{lstlisting}
 \item Install deps:\\
   \begin{lstlisting}[language=bash,numbers=none]
-pip install -e .[dev]
-pre-commit install   # optional for lint
+pip install -r Codes/requirements.txt
   \end{lstlisting}
 \item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \item Set working directory for runtime scripts to \texttt{Codes/}:\\
