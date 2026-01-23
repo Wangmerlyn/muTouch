@@ -10,8 +10,6 @@
 \usepackage{microtype}
 \usepackage{url}
 \urlstyle{same}
-% Load hyperref last to avoid clashes
-\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=MidnightBlue,urlcolor=BrickRed]{hyperref}
 
 \lstset{
   basicstyle=\ttfamily\footnotesize,
@@ -45,18 +43,14 @@ Dongyao~Chen\IEEEauthorrefmark{1}}
 }
 
 \begin{document}
-\hypersetup{
-  pdftitle={\textmu Touch Artifact Guide},
-  pdfauthor={Siyuan Wang, Ke Li, Jingyuan Huang, Jike Wang, Cheng Zhang, Alanson Sample, Dongyao Chen}
-}
 \maketitle
 \sloppy
 
 \section*{Quick Links}
 \begin{center}
 \begin{tabular}{@{}p{0.92in}>{\raggedright\arraybackslash}p{2.35in}@{}}
-Code repo & \href{https://github.com/Wangmerlyn/muTouch}{github.com/Wangmerlyn/muTouch} \\
-MagX base & \href{https://github.com/dychen24/magx}{github.com/dychen24/magx} \\
+Code repo & \texttt{github.com/Wangmerlyn/muTouch} \\
+MagX base & \texttt{github.com/dychen24/magx} \\
 Models & Tag \texttt{backup/3\_dim-models-20260121} (GitHub Releases $\to$ Assets) \\
 PCB sources & \texttt{pcb/} (muTouch Altium project; legacy \texttt{Magway.*} filenames) \\
 \end{tabular}
