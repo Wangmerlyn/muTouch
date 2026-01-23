@@ -138,7 +138,7 @@ Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model
 \subsection{Expected outcomes}
 \begin{itemize}[leftmargin=1.2em]
   \item Face-touching: $\approx$93\% accuracy (8 gestures) with 3\,s fine-tuning/user.
-  \item Scratch detection: $\approx$95\% accuracy across 12 participants.
+  \item Scratch detection: $\approx$95\% accuracy (9 gestures) with 3\,s fine-tuning/user.
   \item Real-time loop maintains $>$30\,Hz inference on a laptop CPU.
 \end{itemize}
 
@@ -156,6 +156,9 @@ Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model
   \item Drifting predictions: recalibrate sensors; ensure distance from large metal; re-run offset/scale.
   \item Import errors: confirm submodule init (\texttt{git submodule update --init --recursive}) and Python path from repo root.
 \end{itemize}
+
+\section{For Complete Instructions}
+Due to page limits, this PDF is a concise checklist. For full, continuously updated steps and tips, please refer to the repository \texttt{README.md} and the Markdown guide at \texttt{artifact/ARTIFACT_GUIDE.md}. Use those as the authoritative references for reproduction and further code tweaks.
 
 \section{Notes on Prior Work}
 The project builds on MagX (MobiCom'21) codebase for magnetic sensing~\cite{mag_x}. This artifact extends it to self-touch sensing and includes updated PCB by Xiaomeng Chen.
