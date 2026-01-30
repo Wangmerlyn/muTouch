@@ -58,7 +58,11 @@ PCB sources & \texttt{pcb/} (muTouch Altium project; legacy \texttt{Magway.*} fi
 \end{center}
 
 \section{Scope}
-This guide describes the artifact supporting \textmu Touch: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline. Hardware specs live in \texttt{pcb/README.md}; firmware/data collection specs in \texttt{Codes/read\_raw\_ble/}; high-level overview in \texttt{README.md}.
+This guide describes the artifact supporting \textmu Touch: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline. Component specs and how they are verified: hardware specs and outputs in \texttt{pcb/README.md} (used in Section~\ref{sec:setup}); firmware/data-collection specs and expected signals in \texttt{Codes/read\_raw\_ble/README.md} (used in Sections~\ref{sec:setup}--\ref{sec:running}); project overview and folder purposes (including \texttt{artifact/}) in \texttt{README.md}.
+
+\section{Notation}
+\label{sec:notation}
+Paths are relative to the repo root unless stated; runtime scripts assume \texttt{Codes/} as the working directory.
 
 \section{Bill of Materials \& Requirements}
 \subsection{Hardware (minimal)}
@@ -104,6 +108,7 @@ cd Codes
 \end{enumerate}
 
 \section{Setup \& Configuration}
+\label{sec:setup}
 \begin{enumerate}[leftmargin=1.2em]
   \item Flash firmware:\\
   {\scriptsize\texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino}} in Arduino IDE;\\
@@ -121,6 +126,7 @@ python read_raw_ble/read_sensor.py
 \end{enumerate}
 
 \section{Running the Artifact}
+\label{sec:running}
 \subsection{Data capture}
 \noindent Captures raw magnetometer streams over BLE with the latest calibration, writing timestamped CSVs under \texttt{datasets/}.
 \begin{lstlisting}[language=bash,numbers=none]
