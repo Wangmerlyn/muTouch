@@ -2,6 +2,8 @@
 
 This Markdown guide is the detailed, always-updated companion to the short PDF checklist. Follow the steps below to reproduce the artifact, evaluate the system, and modify the code.
 
+> Recommended view: GitHub preview at https://github.com/Wangmerlyn/muTouch/blob/main/artifact/ARTIFACT_GUIDE.md
+
 ## 1. Prerequisites
 - OS: Ubuntu 20.04+ or macOS 12+ (tested on laptop CPU).
 - Python 3.10.
