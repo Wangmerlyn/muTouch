@@ -19,6 +19,7 @@ This directory contains code and PCB files for μTouch, as described in:
 - **Models & inference**: real-time classifiers, TS2Vec-based embeddings (submodule), and result analysis tools in `Codes/read_raw_ble`.
 - **Optimization & calibration**: signal processing, calibration, and layout exploration code in `Codes/optimization`.
 - **Hardware**: muTouch PCB design package in `pcb/` (Altium project, BoM doc, PnP outputs). PCB design by [Xiaomeng Chen](https://github.com/blankchenxm). *(File names retain the legacy `Magway.*` prefix for tooling compatibility.)*
+- **Artifact package**: `artifact/` contains the LaTeX/PDF artifact guide (`artifact_guide.tex/pdf`) and a detailed Markdown guide (`ARTIFACT_GUIDE.md`) for artifact review and reproduction.
 
 ## Quick start (edge pipeline)
 1. **Hardware**: assemble the muTouch PCB (see `pcb/README.md`) and flash `Codes/Arduino/bleReadMultiple/bleReadMultiple.ino` to the sensing array.
