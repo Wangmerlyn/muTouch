@@ -10,6 +10,7 @@
 \usepackage{microtype}
 \usepackage{url}
 \urlstyle{same}
+\usepackage[hidelinks,bookmarks=false]{hyperref}
 
 \lstset{
   basicstyle=\ttfamily\footnotesize,
@@ -26,7 +27,7 @@
 \newcommand{\cmark}{\ding{51}}
 \newcommand{\xmark}{\ding{55}}
 
-\title{\textmu Touch Artifact Guide}
+\title{{\textmu}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets\\(Artifact Guide)}
 
 \author{
 \IEEEauthorblockN{
@@ -49,15 +50,19 @@ Dongyao~Chen\IEEEauthorrefmark{1}}
 \section*{Quick Links}
 \begin{center}
 \begin{tabular}{@{}p{0.92in}>{\raggedright\arraybackslash}p{2.35in}@{}}
-Code repo & \texttt{github.com/Wangmerlyn/muTouch} \\
-MagX base & \texttt{github.com/dychen24/magx} \\
-Models & Tag \texttt{backup/3\_dim-models-20260121} (GitHub Releases $\to$ Assets) \\
+Code repo & \href{https://github.com/Wangmerlyn/muTouch}{github.com/Wangmerlyn/muTouch} \\
+MagX base & \href{https://github.com/dychen24/magx}{github.com/dychen24/magx} \\
+Models & Release tag \texttt{backup/3\_dim-models-20260121} on GitHub Releases (Assets) \\
 PCB sources & \texttt{pcb/} (muTouch Altium project; legacy \texttt{Magway.*} filenames) \\
 \end{tabular}
 \end{center}
 
 \section{Scope}
-This guide describes the artifact supporting \textmu Touch: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline.
+This guide describes the artifact supporting \textmu Touch: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline. Component specs and how they are verified: hardware specs and outputs in \texttt{pcb/README.md} (used in Section~\ref{sec:setup}); firmware/data-collection specs and expected signals in \texttt{Codes/read\_raw\_ble/README.md} (used in Sections~\ref{sec:setup}--\ref{sec:running}); project overview and folder purposes (including \texttt{artifact/}) in \texttt{README.md}.
+
+\section{Notation}
+\label{sec:notation}
+Paths are relative to the repo root unless stated; runtime scripts assume \texttt{Codes/} as the working directory.
 
 \section{Bill of Materials \& Requirements}
 \subsection{Hardware (minimal)}
@@ -69,10 +74,10 @@ This guide describes the artifact supporting \textmu Touch: hardware (muTouch PC
 \end{itemize}
 \subsection{Software}
 \begin{itemize}[leftmargin=*]
-  \item Python 3.10; Conda recommended.
-  \item Git with submodules; CMake/Make (only if rebuilding C++ solver).
-  \item Dependencies from \texttt{pip install -e .[dev]}.
-  \item Latex/PDF tools not required for runtime; only for this guide.
+  \item Python 3.10; Conda virtual env named \texttt{muTouch} recommended.
+  \item Git with submodules; CMake/Make only if you rebuild the C++ solver.
+  \item Dependencies installed via \texttt{pip install -r Codes/requirements.txt}.
+  \item LaTeX/PDF tools only needed to rebuild this document.
 \end{itemize}
 
 \section{Obtaining the Artifact}
@@ -83,15 +88,18 @@ git clone --recurse-submodules git@github.com:Wangmerlyn/muTouch.git
 # HTTPS fallback:
 # https://github.com/Wangmerlyn/muTouch.git
   \end{lstlisting}
+  If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
 \item Activate env:\\
   \begin{lstlisting}[language=bash,numbers=none]
 conda create -n muTouch python=3.10
 conda activate muTouch
   \end{lstlisting}
+  You should see the shell prompt prefixed with \texttt{(muTouch)} after activation; this isolates dependencies for repeatability.
 \item Install deps:\\
   \begin{lstlisting}[language=bash,numbers=none]
 pip install -r Codes/requirements.txt
   \end{lstlisting}
+  Expect a clean install without errors; rerun from the repo root if paths are not found.
 \item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \item Set working directory for runtime scripts to \texttt{Codes/}:\\
   \begin{lstlisting}[language=bash,numbers=none]
@@ -100,12 +108,13 @@ cd Codes
 \end{enumerate}
 
 \section{Setup \& Configuration}
+\label{sec:setup}
 \begin{enumerate}[leftmargin=1.2em]
   \item Flash firmware:\\
   {\scriptsize\texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino}} in Arduino IDE;\\
   select Feather nRF52; upload.
   \item Find BLE address: \texttt{python read\_raw\_ble/find\_device.py} (copy device MAC/UUID).
-  \item Hardcode BLE address: edit the \texttt{address = "..."} line near the bottom of\\
+  \item Hardcode BLE address: edit the \texttt{address = ``...''} line near the bottom of\\
   \texttt{read\_raw\_ble/read\_sensor.py}, \texttt{read\_raw\_ble/read\_sensor\_real.py}, and (if used)\\ \texttt{read\_raw\_ble/read\_sensor\_real\_classifier.py}.
   \item Calibration capture (run inside \texttt{Codes/}):\\
   \begin{lstlisting}[language=bash,numbers=none]
@@ -117,17 +126,19 @@ python read_raw_ble/read_sensor.py
 \end{enumerate}
 
 \section{Running the Artifact}
+\label{sec:running}
 \subsection{Data capture}
+\noindent Captures raw magnetometer streams over BLE with the latest calibration, writing timestamped CSVs under \texttt{datasets/}.
 \begin{lstlisting}[language=bash,numbers=none]
 python read_raw_ble/read_sensor_real.py
 \end{lstlisting}
-Outputs timestamped CSVs under \texttt{datasets/}.
 
 \subsection{Real-time classification}
+\noindent Runs the live classifier; expect gesture labels printed to console and logged in \texttt{datasets/}.
 \begin{lstlisting}[language=bash,numbers=none]
 python read_raw_ble/read_sensor_real_classifier.py
 \end{lstlisting}
-Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files.\\ Console prints detected gesture labels; logs are saved under \texttt{datasets/}.
+Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \texttt{calibration\_files/} and \texttt{read\_raw\_ble/models/}).
 
 \subsection{Expected outcomes}
 \begin{itemize}[leftmargin=1.2em]

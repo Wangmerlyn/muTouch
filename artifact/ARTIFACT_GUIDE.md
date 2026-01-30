@@ -11,12 +11,15 @@ This Markdown guide is the detailed, always-updated companion to the short PDF c
 ## 2. Setup
 ```bash
 git clone --recurse-submodules git@github.com:Wangmerlyn/muTouch.git
+# If SSH shows permission denied, use HTTPS:
+# git clone --recurse-submodules https://github.com/Wangmerlyn/muTouch.git
 cd muTouch
 conda create -y -n muTouch python=3.10
-conda activate muTouch
+conda activate muTouch   # prompt should show (muTouch)
 pip install -r Codes/requirements.txt
 cd Codes   # all runtime scripts assume this as the working directory
 ```
+Why: isolating deps avoids version drift; success = no pip errors and `(muTouch)` prefix in your prompt.
 
 ## 3. Flash firmware
 1. Open `Codes/Arduino/bleReadMultiple/bleReadMultiple.ino` in Arduino IDE.
@@ -52,13 +55,13 @@ python read_raw_ble/read_sensor.py
 ```bash
 python read_raw_ble/read_sensor_real.py
 ```
-Outputs timestamped CSVs under `datasets/`.
+Captures calibrated magnetometer streams; outputs timestamped CSVs under `datasets/` (one file per run).
 
 ## 9. Real-time classification
 ```bash
 python read_raw_ble/read_sensor_real_classifier.py
 ```
-Console prints gesture labels; logs go to `datasets/`. Ensure offset/scale and model paths point to your latest files/checkpoints in `read_raw_ble/models/`.
+Runs live classifier; expect gesture labels printed to console and logged under `datasets/`. Ensure offset/scale and model paths point to your latest files/checkpoints in `read_raw_ble/models/`.
 
 ## 10. Expected outcomes (baseline)
 - Face-touching: ~93% accuracy (8 gestures) with 3 s/user fine-tuning.
