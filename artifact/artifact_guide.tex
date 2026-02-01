@@ -15,8 +15,8 @@
 \usemintedstyle{vs}
 \setminted{
   fontsize=\footnotesize,
-  breaklines=true,
-  breakanywhere=true,
+  breaklines=false,
+  breakanywhere=false,
   frame=single,
   autogobble=true
 }
@@ -83,9 +83,11 @@ Paths are relative to the repo root unless stated; runtime scripts assume \textt
 \begin{enumerate}[leftmargin=1.2em]
   \item Clone the repository (now public):\\
   \begin{minted}{bash}
-git clone --recurse-submodules git@github.com:Wangmerlyn/muTouch.git
+git clone --recurse-submodules \
+  git@github.com:Wangmerlyn/muTouch.git
 # HTTPS fallback:
-# git clone --recurse-submodules https://github.com/Wangmerlyn/muTouch.git
+# git clone --recurse-submodules \
+#   https://github.com/Wangmerlyn/muTouch.git
   \end{minted}
   If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
 \item Activate env:\\
