@@ -6,22 +6,19 @@
 \usepackage{pifont}
 \usepackage{amsmath}
 \usepackage{array}
-\usepackage{listings}
+\usepackage{minted}
 \usepackage{microtype}
 \usepackage{url}
 \urlstyle{same}
 \usepackage[hidelinks,bookmarks=false]{hyperref}
 
-\lstset{
-  basicstyle=\ttfamily\footnotesize,
-  numbers=left,
-  numberstyle=\tiny,
-  frame=single,
-  showstringspaces=false,
+\usemintedstyle{vs}
+\setminted{
+  fontsize=\footnotesize,
   breaklines=true,
-  keywordstyle=\color{blue},
-  commentstyle=\color{gray},
-  stringstyle=\color{orange}
+  breakanywhere=true,
+  frame=single,
+  autogobble=true
 }
 
 \newcommand{\cmark}{\ding{51}}
@@ -85,28 +82,28 @@ Paths are relative to the repo root unless stated; runtime scripts assume \textt
 \section{Obtaining the Artifact}
 \begin{enumerate}[leftmargin=1.2em]
   \item Clone the repository (now public):\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{minted}{bash}
 git clone --recurse-submodules git@github.com:Wangmerlyn/muTouch.git
 # HTTPS fallback:
-# https://github.com/Wangmerlyn/muTouch.git
-  \end{lstlisting}
+# git clone --recurse-submodules https://github.com/Wangmerlyn/muTouch.git
+  \end{minted}
   If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
 \item Activate env:\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{minted}{bash}
 conda create -n muTouch python=3.10
 conda activate muTouch
-  \end{lstlisting}
+  \end{minted}
   You should see the shell prompt prefixed with \texttt{(muTouch)} after activation; this isolates dependencies for repeatability.
 \item Install deps:\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{minted}{bash}
 pip install -r Codes/requirements.txt
-  \end{lstlisting}
+  \end{minted}
   Expect a clean install without errors; rerun from the repo root if paths are not found.
 \item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \item Set working directory for runtime scripts to \texttt{Codes/}:\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{minted}{bash}
 cd Codes
-  \end{lstlisting}
+  \end{minted}
 \end{enumerate}
 
 \section{Setup \& Configuration}
@@ -119,9 +116,9 @@ cd Codes
   \item Hardcode BLE address: edit the \texttt{address = ``...''} line near the bottom of\\
   \texttt{read\_raw\_ble/read\_sensor.py}, \texttt{read\_raw\_ble/read\_sensor\_real.py}, and (if used)\\ \texttt{read\_raw\_ble/read\_sensor\_real\_classifier.py}.
   \item Calibration capture (run inside \texttt{Codes/}):\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{minted}{bash}
 python read_raw_ble/read_sensor.py
-  \end{lstlisting}
+  \end{minted}
   Do a brief figure-8 motion away from metal surfaces; CSVs are saved under \texttt{datasets/}.
   \item Offsets/scales: place the latest files named \texttt{offset-*.npy} and \texttt{scale-*.npy} in \path{calibration_files/}. The scripts automatically load the newest files with those prefixes.
   \item Models: ensure \texttt{read\_raw\_ble/models/} holds the downloaded checkpoint set if you need pretrained classifiers.
@@ -131,15 +128,15 @@ python read_raw_ble/read_sensor.py
 \label{sec:running}
 \subsection{Data capture}
 \noindent Captures raw magnetometer streams over BLE with the latest calibration, writing timestamped CSVs under \texttt{datasets/}.
-\begin{lstlisting}[language=bash,numbers=none]
+\begin{minted}{bash}
 python read_raw_ble/read_sensor_real.py
-\end{lstlisting}
+\end{minted}
 
 \subsection{Real-time classification}
 \noindent Runs the live classifier; expect gesture labels printed to console and logged in \texttt{datasets/}.
-\begin{lstlisting}[language=bash,numbers=none]
+\begin{minted}{bash}
 python read_raw_ble/read_sensor_real_classifier.py
-\end{lstlisting}
+\end{minted}
 Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \texttt{calibration\_files/} and \texttt{read\_raw\_ble/models/}).
 
 \subsection{Expected outcomes}
@@ -165,7 +162,7 @@ Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model
 \end{itemize}
 
 \section{For Complete Instructions}
-Due to page limits, this PDF is a concise checklist. For full, continuously updated steps and tips, please refer to the repository \texttt{README.md} and the Markdown guide (best viewed via GitHub preview): \href{https://github.com/Wangmerlyn/muTouch/blob/main/artifact/ARTIFACT_GUIDE.md}{\texttt{artifact/ARTIFACT\_GUIDE.md}}. Use those as the authoritative references for reproduction and further code tweaks.
+Due to page limits, this PDF is a concise checklist. For full, continuously updated steps and tips, please refer to the repository \texttt{README.md} and the Markdown guide (best viewed via GitHub preview): \href{https://github.com/Wangmerlyn/muTouch/blob/main/artifact/README.md}{\texttt{artifact/README.md}}. Use those as the authoritative references for reproduction and further code tweaks.
 
 \section{Notes on Prior Work}
 The project builds on MagX (MobiCom'21) codebase for magnetic sensing~\cite{mag_x}. This artifact extends it to self-touch sensing and includes updated PCB by Xiaomeng Chen.

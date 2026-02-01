@@ -2,7 +2,7 @@
 
 This Markdown guide is the detailed, always-updated companion to the short PDF checklist. Follow the steps below to reproduce the artifact, evaluate the system, and modify the code.
 
-> Recommended view: [GitHub preview](https://github.com/Wangmerlyn/muTouch/blob/main/artifact/ARTIFACT_GUIDE.md)
+> Recommended view: [GitHub preview](https://github.com/Wangmerlyn/muTouch/blob/main/artifact/README.md)
 
 ## 1. Prerequisites
 - OS: Ubuntu 20.04+ or macOS 12+ (tested on laptop CPU).
@@ -87,10 +87,10 @@ git submodule update --init --recursive
 - For modifications or reproduction, prefer this Markdown guide and `README.md`; the PDF is intentionally concise due to page limits.
 
 ## 14. Re-run the PDF (optional)
-If you edit LaTeX and need the PDF:
+If you edit LaTeX and need the PDF (minted requires shell-escape):
 ```bash
 cd artifact
-/tmp/tectonic artifact_guide.tex
+latexmk -pdf -shell-escape artifact_guide.tex
 ```
 
 ## 15. Attribution
