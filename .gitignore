@@ -200,3 +200,8 @@ receiver.sh
 # artifact submission bundle (keep guide only; paper is private)
 artifact/prelim_paper.pdf
 artifact/mutouch_artifact_bundle.pdf
+artifact/_minted-artifact_guide/
+artifact/artifact_guide.aux
+artifact/artifact_guide.fdb_latexmk
+artifact/artifact_guide.fls
+artifact/artifact_guide.log
