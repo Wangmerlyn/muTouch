@@ -87,10 +87,10 @@ git submodule update --init --recursive
 - For modifications or reproduction, prefer this Markdown guide and `README.md`; the PDF is intentionally concise due to page limits.
 
 ## 14. Re-run the PDF (optional)
-If you edit LaTeX and need the PDF (minted requires shell-escape):
+If you edit LaTeX and need the PDF:
 ```bash
 cd artifact
-latexmk -pdf -shell-escape artifact_guide.tex
+latexmk -pdf artifact_guide.tex
 ```
 
 ## 15. Attribution

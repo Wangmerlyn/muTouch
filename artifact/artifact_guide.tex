@@ -1,28 +1,10 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
-\usepackage[dvipsnames]{xcolor}
-\usepackage{enumitem}
 \usepackage{balance}
-\usepackage{pifont}
-\usepackage{amsmath}
 \usepackage{array}
-\usepackage{listings}
-\usepackage{microtype}
 \usepackage{url}
 \urlstyle{same}
 \usepackage[hidelinks,bookmarks=false]{hyperref}
-
-\lstset{
-  basicstyle=\ttfamily\footnotesize,
-  numbers=left,
-  numberstyle=\tiny,
-  frame=single,
-  showstringspaces=false,
-  breaklines=true
-}
-
-\newcommand{\cmark}{\ding{51}}
-\newcommand{\xmark}{\ding{55}}
 
 \title{Artifact: {\textmu}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets}
 
@@ -65,14 +47,14 @@ Paths are relative to the repo root unless stated; runtime scripts assume \textt
 
 \section{Bill of Materials \& Requirements}
 \subsection{Hardware (minimal)}
-\begin{itemize}[leftmargin=*]
+\begin{itemize}
   \item muTouch PCB (Altium project in \texttt{pcb/}; assembled board; filenames use legacy \texttt{Magway.*}). PCB design by Xiaomeng Chen.
   \item 1\textendash2 passive N52 grade magnets (6--8\,mm recommended).
   \item Host laptop: Ubuntu 20.04+ or macOS 12+, 4-core CPU, $\geq$8\,GB RAM, BLE 4.0+ adapter.
   \item Optional: BLE USB dongle (if desktop lacks BLE).
 \end{itemize}
 \subsection{Software}
-\begin{itemize}[leftmargin=*]
+\begin{itemize}
   \item Python 3.10; Conda virtual env named \texttt{muTouch} recommended.
   \item Git with submodules; CMake/Make only if you rebuild the C++ solver.
   \item Dependencies installed via \texttt{pip install -r Codes/requirements.txt}.
@@ -80,37 +62,37 @@ Paths are relative to the repo root unless stated; runtime scripts assume \textt
 \end{itemize}
 
 \section{Obtaining the Artifact}
-\begin{enumerate}[leftmargin=1.2em]
+\begin{enumerate}
   \item Clone the repository (now public):\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{verbatim}
 git clone --recurse-submodules \
   git@github.com:Wangmerlyn/muTouch.git
 # HTTPS fallback:
 # git clone --recurse-submodules \
 #   https://github.com/Wangmerlyn/muTouch.git
-  \end{lstlisting}
+  \end{verbatim}
   If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
 \item Activate env:\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{verbatim}
 conda create -n muTouch python=3.10
 conda activate muTouch
-  \end{lstlisting}
+  \end{verbatim}
   You should see the shell prompt prefixed with \texttt{(muTouch)} after activation; this isolates dependencies for repeatability.
 \item Install deps:\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{verbatim}
 pip install -r Codes/requirements.txt
-  \end{lstlisting}
+  \end{verbatim}
   Expect a clean install without errors; rerun from the repo root if paths are not found.
 \item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \item Set working directory for runtime scripts to \texttt{Codes/}:\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{verbatim}
 cd Codes
-  \end{lstlisting}
+  \end{verbatim}
 \end{enumerate}
 
 \section{Setup \& Configuration}
 \label{sec:setup}
-\begin{enumerate}[leftmargin=1.2em]
+\begin{enumerate}
   \item Flash firmware:\\
   {\scriptsize\texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino}} in Arduino IDE;\\
   select Feather nRF52; upload.
@@ -118,9 +100,9 @@ cd Codes
   \item Hardcode BLE address: edit the \texttt{address = ``...''} line near the bottom of\\
   \texttt{read\_raw\_ble/read\_sensor.py}, \texttt{read\_raw\_ble/read\_sensor\_real.py}, and (if used)\\ \texttt{read\_raw\_ble/read\_sensor\_real\_classifier.py}.
   \item Calibration capture (run inside \texttt{Codes/}):\\
-  \begin{lstlisting}[language=bash,numbers=none]
+  \begin{verbatim}
 python read_raw_ble/read_sensor.py
-  \end{lstlisting}
+  \end{verbatim}
   Do a brief figure-8 motion away from metal surfaces; CSVs are saved under \texttt{datasets/}.
   \item Offsets/scales: place the latest files named \texttt{offset-*.npy} and \texttt{scale-*.npy} in \path{calibration_files/}. The scripts automatically load the newest files with those prefixes.
   \item Models: ensure \texttt{read\_raw\_ble/models/} holds the downloaded checkpoint set if you need pretrained classifiers.
@@ -130,26 +112,26 @@ python read_raw_ble/read_sensor.py
 \label{sec:running}
 \subsection{Data capture}
 \noindent Captures raw magnetometer streams over BLE with the latest calibration, writing timestamped CSVs under \texttt{datasets/}.
-\begin{lstlisting}[language=bash,numbers=none]
+\begin{verbatim}
 python read_raw_ble/read_sensor_real.py
-\end{lstlisting}
+\end{verbatim}
 
 \subsection{Real-time classification}
 \noindent Runs the live classifier; expect gesture labels printed to console and logged in \texttt{datasets/}.
-\begin{lstlisting}[language=bash,numbers=none]
+\begin{verbatim}
 python read_raw_ble/read_sensor_real_classifier.py
-\end{lstlisting}
+\end{verbatim}
 Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \texttt{calibration\_files/} and \texttt{read\_raw\_ble/models/}).
 
 \subsection{Expected outcomes}
-\begin{itemize}[leftmargin=1.2em]
+\begin{itemize}
   \item Face-touching: $\approx$93\% accuracy (8 gestures) with 3\,s fine-tuning/user.
   \item Scratch detection: $\approx$95\% accuracy (9 gestures) with 3\,s fine-tuning/user.
   \item Real-time loop maintains $>$30\,Hz inference on a laptop CPU.
 \end{itemize}
 
 \section{Reproducibility Checklist}
-\begin{itemize}[leftmargin=*]
+\begin{itemize}
   \item \textbf{Hardware reproducible}: PCB sources + BOM (muTouch; files named \texttt{Magway.*} for compatibility) included.
   \item \textbf{Software reproducible}: All scripts + TS2Vec submodule; pinned deps in \texttt{Codes/requirements.txt}.
   \item \textbf{Data}: Calibration and small demo runs can be generated locally; full datasets are participant-specific and not included.
@@ -157,7 +139,7 @@ Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model
 \end{itemize}
 
 \section{Troubleshooting}
-\begin{itemize}[leftmargin=*]
+\begin{itemize}
   \item BLE not found: retry \texttt{find\_device.py}; check power and pairing blocks; use BLE dongle.
   \item Drifting predictions: recalibrate sensors; ensure distance from large metal; re-run offset/scale.
   \item Import errors: confirm submodule init (\texttt{git submodule update --init --recursive}) and Python path from repo root.
