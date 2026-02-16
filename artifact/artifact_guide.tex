@@ -6,19 +6,19 @@
 \usepackage{pifont}
 \usepackage{amsmath}
 \usepackage{array}
-\usepackage{minted}
+\usepackage{listings}
 \usepackage{microtype}
 \usepackage{url}
 \urlstyle{same}
 \usepackage[hidelinks,bookmarks=false]{hyperref}
 
-\usemintedstyle{vs}
-\setminted{
-  fontsize=\footnotesize,
-  breaklines=false,
-  breakanywhere=false,
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  numbers=left,
+  numberstyle=\tiny,
   frame=single,
-  autogobble=true
+  showstringspaces=false,
+  breaklines=true
 }
 
 \newcommand{\cmark}{\ding{51}}
@@ -82,30 +82,30 @@ Paths are relative to the repo root unless stated; runtime scripts assume \textt
 \section{Obtaining the Artifact}
 \begin{enumerate}[leftmargin=1.2em]
   \item Clone the repository (now public):\\
-  \begin{minted}{bash}
+  \begin{lstlisting}[language=bash,numbers=none]
 git clone --recurse-submodules \
   git@github.com:Wangmerlyn/muTouch.git
 # HTTPS fallback:
 # git clone --recurse-submodules \
 #   https://github.com/Wangmerlyn/muTouch.git
-  \end{minted}
+  \end{lstlisting}
   If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
 \item Activate env:\\
-  \begin{minted}{bash}
+  \begin{lstlisting}[language=bash,numbers=none]
 conda create -n muTouch python=3.10
 conda activate muTouch
-  \end{minted}
+  \end{lstlisting}
   You should see the shell prompt prefixed with \texttt{(muTouch)} after activation; this isolates dependencies for repeatability.
 \item Install deps:\\
-  \begin{minted}{bash}
+  \begin{lstlisting}[language=bash,numbers=none]
 pip install -r Codes/requirements.txt
-  \end{minted}
+  \end{lstlisting}
   Expect a clean install without errors; rerun from the repo root if paths are not found.
 \item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
 \item Set working directory for runtime scripts to \texttt{Codes/}:\\
-  \begin{minted}{bash}
+  \begin{lstlisting}[language=bash,numbers=none]
 cd Codes
-  \end{minted}
+  \end{lstlisting}
 \end{enumerate}
 
 \section{Setup \& Configuration}
@@ -118,9 +118,9 @@ cd Codes
   \item Hardcode BLE address: edit the \texttt{address = ``...''} line near the bottom of\\
   \texttt{read\_raw\_ble/read\_sensor.py}, \texttt{read\_raw\_ble/read\_sensor\_real.py}, and (if used)\\ \texttt{read\_raw\_ble/read\_sensor\_real\_classifier.py}.
   \item Calibration capture (run inside \texttt{Codes/}):\\
-  \begin{minted}{bash}
+  \begin{lstlisting}[language=bash,numbers=none]
 python read_raw_ble/read_sensor.py
-  \end{minted}
+  \end{lstlisting}
   Do a brief figure-8 motion away from metal surfaces; CSVs are saved under \texttt{datasets/}.
   \item Offsets/scales: place the latest files named \texttt{offset-*.npy} and \texttt{scale-*.npy} in \path{calibration_files/}. The scripts automatically load the newest files with those prefixes.
   \item Models: ensure \texttt{read\_raw\_ble/models/} holds the downloaded checkpoint set if you need pretrained classifiers.
@@ -130,15 +130,15 @@ python read_raw_ble/read_sensor.py
 \label{sec:running}
 \subsection{Data capture}
 \noindent Captures raw magnetometer streams over BLE with the latest calibration, writing timestamped CSVs under \texttt{datasets/}.
-\begin{minted}{bash}
+\begin{lstlisting}[language=bash,numbers=none]
 python read_raw_ble/read_sensor_real.py
-\end{minted}
+\end{lstlisting}
 
 \subsection{Real-time classification}
 \noindent Runs the live classifier; expect gesture labels printed to console and logged in \texttt{datasets/}.
-\begin{minted}{bash}
+\begin{lstlisting}[language=bash,numbers=none]
 python read_raw_ble/read_sensor_real_classifier.py
-\end{minted}
+\end{lstlisting}
 Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \texttt{calibration\_files/} and \texttt{read\_raw\_ble/models/}).
 
 \subsection{Expected outcomes}
