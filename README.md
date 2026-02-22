@@ -14,6 +14,21 @@ This site is configured to be hosted at:
 
 Because this is a static site, deployment to GitHub Pages only requires publishing the repository contents (including `index.html` and `static/`) to the branch/folder configured for Pages.
 
+## Automatic Sync to `Wangmerlyn/muTouch` `gh-pages`
+
+This repository includes a workflow at `.github/workflows/sync-to-mutouch-gh-pages.yml`.
+
+When changes are pushed to `main` (for `index.html`, `static/**`, `.nojekyll`, or `README.md`), it syncs deploy files to:
+
+- target repo: `Wangmerlyn/muTouch`
+- target branch: `gh-pages`
+
+Required one-time setup:
+
+1. Create a [fine-grained GitHub token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) with `contents: write` permission for `Wangmerlyn/muTouch`.
+2. Add it to this repository as a secret named `MUTOUCH_SYNC_TOKEN`.
+3. Keep GitHub Pages in `Wangmerlyn/muTouch` configured to deploy from branch `gh-pages` (root).
+
 ## Project Structure
 
 - `index.html`: main project page
