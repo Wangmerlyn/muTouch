@@ -1,5 +1,9 @@
 # μTouch: Accurate, Lightweight Self-Touch Sensing with Passive Magnets
 
+[![arXiv](https://img.shields.io/badge/arXiv-2601.22864-b31b1b?style=flat&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2601.22864)
+[![Project Page](https://img.shields.io/badge/Project_Page-muTouch-1f6feb?style=flat&logo=googlechrome&logoColor=white)](https://wangmerlyn.github.io/muTouch)
+[![Code](https://img.shields.io/badge/Code-GitHub-24292f?style=flat&logo=github&logoColor=white)](https://github.com/Wangmerlyn/muTouch)
+
 ## About
 This directory contains code and PCB files for μTouch, as described in:
 
