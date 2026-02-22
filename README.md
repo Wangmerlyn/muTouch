@@ -1,80 +1,44 @@
-# Academic Project Page Template
+# muTouch Project Page
 
-> **Update (September 2025)**: This template has been modernized with better design, SEO, and mobile support. For the original version, see the [original-version branch](https://github.com/eliahuhorwitz/Academic-project-page-template/tree/original-version).
+Project page source for:
 
-A clean, responsive template for academic project pages.
+- Paper: `μTouch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets`
+- arXiv: https://arxiv.org/abs/2601.22864
+- Code: https://github.com/Wangmerlyn/muTouch
 
+## Deployment Target
 
-Example project pages built using this template are:
-- https://horwitz.ai/probex
-- https://vision.huji.ac.il/probegen
-- https://horwitz.ai/mother
-- https://horwitz.ai/spectral_detuning
-- https://vision.huji.ac.il/ladeda
-- https://vision.huji.ac.il/dsire
-- https://horwitz.ai/podd
-- https://dreamix-video-editing.github.io
-- https://horwitz.ai/conffusion
-- https://horwitz.ai/3d_ads/
-- https://vision.huji.ac.il/ssrl_ad
-- https://vision.huji.ac.il/deepsim
+This site is configured to be hosted at:
 
+- `https://wangmerlyn.github.io/muTouch/`
 
+Because this is a static site, deployment to GitHub Pages only requires publishing the repository contents (including `index.html` and `static/`) to the branch/folder configured for Pages.
 
-## Start using the template
-To start using the template click on `Use this Template`.
+## Project Structure
 
-The template uses html for controlling the content and css for controlling the style. 
-To edit the websites contents edit the `index.html` file. It contains different HTML "building blocks", use whichever ones you need and comment out the rest.  
+- `index.html`: main project page
+- `static/css/index.css`: page styling
+- `static/js/index.js`: page interactions (BibTeX copy, carousel, scroll-to-top)
+- `static/images/mutouch_*`: paper figures used by the page
+- `static/pdfs/mutouch.pdf`: local PDF mirror
 
-**IMPORTANT!** Make sure to replace the `favicon.ico` under `static/images/` with one of your own, otherwise your favicon is going to be a dreambooth image of me.
+## Local Preview
 
-## What's New
+Any static server works, for example:
 
-- Modern, clean design with better mobile support
-- Improved SEO with proper meta tags and structured data
-- Performance improvements (lazy loading, optimized assets)
-- More Works dropdown
-- Copy button for BibTeX citations
-- Better accessibility
+```bash
+python3 -m http.server 8000
+```
 
-## Components
+Or use the helper script (with port auto-check):
 
-- Teaser video
-- Image carousel
-- YouTube video embedding
-- Video carousel
-- PDF poster viewer
-- BibTeX citation
+```bash
+./scripts/preview.sh 18080
+```
 
-## Customization
+Then open `http://localhost:<port>`.
 
-The HTML file has TODO comments showing what to replace:
+## Credits
 
-- Paper title, authors, institution, conference
-- Links (arXiv, GitHub, etc.)
-- Abstract and descriptions  
-- Videos, images, and PDFs
-- Related works in the dropdown
-- Meta tags for SEO and social sharing
-
-### Meta Tags
-The template includes meta tags for better search engine visibility and social media sharing. These appear in the `<head>` section and help with:
-- Google Scholar indexing
-- Social media previews (Twitter, Facebook, LinkedIn)
-- Search engine optimization
-
-Create a 1200x630px social preview image at `static/images/social_preview.png`.
-
-## Tips
-
-- Compress images with [TinyPNG](https://tinypng.com)
-- Use YouTube for large videos (>10MB)  
-- Replace the favicon in `static/images/`
-- Works with GitHub Pages
-
-## Acknowledgments
-Parts of this project page were adopted from the [Nerfies](https://nerfies.github.io/) page.
-
-## Website License
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+This page is adapted from the Academic Project Page Template:
+https://github.com/eliahuhorwitz/Academic-project-page-template

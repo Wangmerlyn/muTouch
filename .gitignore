@@ -1,0 +1,17 @@
+# Local planning artifacts
+/task_plan.md
+/findings.md
+/progress.md
+
+# Extracted paper source (working folder)
+/paper_source/
+
+# Uploaded paper source archive (supports prefixed variants)
+*Touch_paper_source.zip
+
+# Local uploaded logo source files (root only)
+/muTouch_logo.png
+/muTouch_light_bg.png
+
+# OS/editor noise
+.DS_Store
