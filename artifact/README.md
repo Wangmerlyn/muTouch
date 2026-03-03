@@ -95,3 +95,10 @@ latexmk -pdf artifact_guide.tex
 
 ## 15. Attribution
 This work builds on MagX (MobiCom’21) for magnetic sensing; see the BibTeX entry in the LaTeX guide (`\cite{mag_x}`).
+
+## 16. IEEE template source
+The official IEEE conference LaTeX template used for the artifact paper is stored in:
+
+`artifact/IEEE-conference-template-062824/`
+
+This includes the provided `IEEEtran.cls` and sample conference template files.
