@@ -102,3 +102,10 @@ The official IEEE conference LaTeX template used for the artifact paper is store
 `artifact/IEEE-conference-template-062824/`
 
 This includes the provided `IEEEtran.cls` and sample conference template files.
+
+## 17. Strict PDF eXpress package
+For strict template provenance checks, use:
+
+`artifact/ieee_strict_artifact_guide/`
+
+This folder is self-contained (`main.tex`, `IEEEtran.cls`, `IEEEtran.bst`, `artifact_refs.bib`) and includes `verify_template.sh` to confirm the class file matches the uploaded IEEE template copy before rendering.
