@@ -6,7 +6,7 @@
 \urlstyle{same}
 \usepackage[hidelinks,bookmarks=false]{hyperref}
 
-\title{Artifact: {\textmu}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets}
+\title{Artifact: {$\mu$}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets}
 
 \author{
 \IEEEauthorblockN{
@@ -39,7 +39,7 @@ PCB sources & \texttt{pcb/} (muTouch Altium project; legacy \texttt{Magway.*} fi
 \end{center}
 
 \section{Scope}
-This guide describes the artifact supporting {\textmu}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets~\cite{mutouch_percom2026}: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline. Component specs and how they are verified: hardware specs and outputs in \texttt{pcb/README.md} (used in Section~\ref{sec:setup}); firmware/data-collection specs and expected signals in \texttt{Codes/read\_raw\_ble/README.md} (used in Sections~\ref{sec:setup}--\ref{sec:running}); project overview and folder purposes (including \texttt{artifact/}) in \texttt{README.md}.
+This guide describes the artifact supporting {$\mu$}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets~\cite{mutouch_percom2026}: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline. Component specs and how they are verified: hardware specs and outputs in \texttt{pcb/README.md} (used in Section~\ref{sec:setup}); firmware/data-collection specs and expected signals in \texttt{Codes/read\_raw\_ble/README.md} (used in Sections~\ref{sec:setup}--\ref{sec:running}); project overview and folder purposes (including \texttt{artifact/}) in \texttt{README.md}.
 
 \section{Notation}
 \label{sec:notation}
@@ -66,10 +66,12 @@ Paths are relative to the repo root unless stated; runtime scripts assume \textt
   \item Clone the repository (now public):\\
   \begin{verbatim}
 git clone --recurse-submodules \
-  git@github.com:Wangmerlyn/muTouch.git
+  git@github.com:Wangmerlyn/\
+  muTouch.git
 # HTTPS fallback:
 # git clone --recurse-submodules \
-#   https://github.com/Wangmerlyn/muTouch.git
+#   https://github.com/Wangmerlyn/\
+#   muTouch.git
   \end{verbatim}
   If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
 \item Activate env:\\
@@ -97,15 +99,19 @@ cd Codes
   {\scriptsize\texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino}} in Arduino IDE;\\
   select Feather nRF52; upload.
   \item Find BLE address: \texttt{python read\_raw\_ble/find\_device.py} (copy device MAC/UUID).
-  \item Hardcode BLE address: edit the \texttt{address = ``...''} line near the bottom of\\
-  \texttt{read\_raw\_ble/read\_sensor.py}, \texttt{read\_raw\_ble/read\_sensor\_real.py}, and (if used)\\ \texttt{read\_raw\_ble/read\_sensor\_real\_classifier.py}.
+  \item Hardcode BLE address: edit the \texttt{address = ``...''} line near the bottom of:
+  \begin{itemize}
+    \item \path{read_raw_ble/read_sensor.py}
+    \item \path{read_raw_ble/read_sensor_real.py}
+    \item \path{read_raw_ble/read_sensor_real_classifier.py} (if used)
+  \end{itemize}
   \item Calibration capture (run inside \texttt{Codes/}):\\
   \begin{verbatim}
 python read_raw_ble/read_sensor.py
   \end{verbatim}
   Do a brief figure-8 motion away from metal surfaces; CSVs are saved under \texttt{datasets/}.
   \item Offsets/scales: place the latest files named \texttt{offset-*.npy} and \texttt{scale-*.npy} in \path{calibration_files/}. The scripts automatically load the newest files with those prefixes.
-  \item Models: ensure \texttt{read\_raw\_ble/models/} holds the downloaded checkpoint set if you need pretrained classifiers.
+  \item Models: ensure \path{read_raw_ble/models/} holds the downloaded checkpoint set if you need pretrained classifiers.
 \end{enumerate}
 
 \section{Running the Artifact}
@@ -119,9 +125,10 @@ python read_raw_ble/read_sensor_real.py
 \subsection{Real-time classification}
 \noindent Runs the live classifier; expect gesture labels printed to console and logged in \texttt{datasets/}.
 \begin{verbatim}
-python read_raw_ble/read_sensor_real_classifier.py
+python read_raw_ble/read_sensor_real_\
+classifier.py
 \end{verbatim}
-Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \texttt{calibration\_files/} and \texttt{read\_raw\_ble/models/}).
+Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \path{calibration_files/} and \path{read_raw_ble/models/}).
 
 \subsection{Expected outcomes}
 \begin{itemize}
