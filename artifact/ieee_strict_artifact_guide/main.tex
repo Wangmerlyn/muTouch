@@ -65,13 +65,11 @@ Paths are relative to the repo root unless stated; runtime scripts assume \textt
 \begin{enumerate}
   \item Clone the repository (now public):\\
   \begin{verbatim}
-git clone --recurse-submodules \
-  git@github.com:Wangmerlyn/\
-  muTouch.git
+REPO_SSH=git@github.com:Wangmerlyn/muTouch.git
+git clone --recurse-submodules "$REPO_SSH"
 # HTTPS fallback:
-# git clone --recurse-submodules \
-#   https://github.com/Wangmerlyn/\
-#   muTouch.git
+# REPO_HTTPS=https://github.com/Wangmerlyn/muTouch.git
+# git clone --recurse-submodules "$REPO_HTTPS"
   \end{verbatim}
   If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
 \item Activate env:\\
@@ -119,14 +117,15 @@ python read_raw_ble/read_sensor.py
 \subsection{Data capture}
 \noindent Captures raw magnetometer streams over BLE with the latest calibration, writing timestamped CSVs under \texttt{datasets/}.
 \begin{verbatim}
-python read_raw_ble/read_sensor_real.py
+SCRIPT=read_raw_ble/read_sensor_real.py
+python "$SCRIPT"
 \end{verbatim}
 
 \subsection{Real-time classification}
 \noindent Runs the live classifier; expect gesture labels printed to console and logged in \texttt{datasets/}.
 \begin{verbatim}
-python read_raw_ble/read_sensor_real_\
-classifier.py
+SCRIPT=read_raw_ble/read_sensor_real_classifier.py
+python "$SCRIPT"
 \end{verbatim}
 Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \path{calibration_files/} and \path{read_raw_ble/models/}).
 

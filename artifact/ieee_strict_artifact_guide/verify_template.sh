@@ -15,8 +15,17 @@ if [[ ! -f "${upstream_cls}" ]]; then
   exit 1
 fi
 
-local_hash="$(sha256sum "${local_cls}" | awk '{print $1}')"
-upstream_hash="$(sha256sum "${upstream_cls}" | awk '{print $1}')"
+if command -v sha256sum >/dev/null 2>&1; then
+  hash_cmd=(sha256sum)
+elif command -v shasum >/dev/null 2>&1; then
+  hash_cmd=(shasum -a 256)
+else
+  echo "ERROR: neither sha256sum nor shasum is available" >&2
+  exit 1
+fi
+
+local_hash="$("${hash_cmd[@]}" "${local_cls}" | awk '{print $1}')"
+upstream_hash="$("${hash_cmd[@]}" "${upstream_cls}" | awk '{print $1}')"
 
 echo "local    : ${local_hash}"
 echo "upstream : ${upstream_hash}"
