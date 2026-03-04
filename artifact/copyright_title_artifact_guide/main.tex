@@ -1,0 +1,163 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{balance}
+\usepackage{array}
+\usepackage{url}
+\urlstyle{same}
+\usepackage[hidelinks,bookmarks=false]{hyperref}
+
+\title{{$\mu$}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets}
+
+\author{
+\IEEEauthorblockN{
+Siyuan~Wang\IEEEauthorrefmark{1},
+Ke~Li\IEEEauthorrefmark{2},
+Jingyuan~Huang\IEEEauthorrefmark{1},
+Jike~Wang\IEEEauthorrefmark{1},
+Cheng~Zhang\IEEEauthorrefmark{2},
+Alanson~Sample\IEEEauthorrefmark{3},
+Dongyao~Chen\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}Shanghai Jiao Tong University, China}
+\IEEEauthorblockA{\IEEEauthorrefmark{2}Cornell University, USA}
+\IEEEauthorblockA{\IEEEauthorrefmark{3}University of Michigan, USA}
+\IEEEauthorblockA{Email: \{wsy0227, aquamarine\_indigo, jikewang, chendy\}@sjtu.edu.cn\\
+\{kl975, chengzhang\}@cornell.edu;\ apsample@umich.edu}
+}
+
+\begin{document}
+\maketitle
+\sloppy
+
+\section*{Quick Links}
+\begin{center}
+\begin{tabular}{@{}p{0.92in}>{\raggedright\arraybackslash}p{2.35in}@{}}
+Code repo & \href{https://github.com/Wangmerlyn/muTouch}{github.com/Wangmerlyn/muTouch} \\
+MagX base & \href{https://github.com/dychen24/magx}{github.com/dychen24/magx} \\
+Models & Release tag \texttt{backup/3\_dim-models-20260121} on GitHub Releases (Assets) \\
+PCB sources & \texttt{pcb/} (muTouch Altium project; legacy \texttt{Magway.*} filenames) \\
+\end{tabular}
+\end{center}
+
+\section{Scope}
+This guide describes the artifact supporting {$\mu$}Touch: Enabling Accurate, Lightweight Self-Touch Sensing with Passive Magnets~\cite{mutouch_percom2026}: hardware (muTouch PCB + magnets) and software (BLE data collection, semi-supervised classifier). It targets reviewers who want to install, run, and validate the pipeline. Component specs and how they are verified: hardware specs and outputs in \texttt{pcb/README.md} (used in Section~\ref{sec:setup}); firmware/data-collection specs and expected signals in \texttt{Codes/read\_raw\_ble/README.md} (used in Sections~\ref{sec:setup}--\ref{sec:running}); project overview and folder purposes (including \texttt{artifact/}) in \texttt{README.md}.
+
+\section{Notation}
+\label{sec:notation}
+Paths are relative to the repo root unless stated; runtime scripts assume \texttt{Codes/} as the working directory.
+
+\section{Bill of Materials \& Requirements}
+\subsection{Hardware (minimal)}
+\begin{itemize}
+  \item muTouch PCB (Altium project in \texttt{pcb/}; assembled board; filenames use legacy \texttt{Magway.*}). PCB design by Xiaomeng Chen.
+  \item 1\textendash2 passive N52 grade magnets (6--8\,mm recommended).
+  \item Host laptop: Ubuntu 20.04+ or macOS 12+, 4-core CPU, $\geq$8\,GB RAM, BLE 4.0+ adapter.
+  \item Optional: BLE USB dongle (if desktop lacks BLE).
+\end{itemize}
+\subsection{Software}
+\begin{itemize}
+  \item Python 3.10; Conda virtual env named \texttt{muTouch} recommended.
+  \item Git with submodules; CMake/Make only if you rebuild the C++ solver.
+  \item Dependencies installed via \texttt{pip install -r Codes/requirements.txt}.
+  \item LaTeX/PDF tools only needed to rebuild this document.
+\end{itemize}
+
+\section{Obtaining the Artifact}
+\begin{enumerate}
+  \item Clone the repository (now public):\\
+  \begin{verbatim}
+REPO_SSH=git@github.com:Wangmerlyn/muTouch.git
+git clone --recurse-submodules "$REPO_SSH"
+# HTTPS fallback:
+# REPO_HTTPS=https://github.com/Wangmerlyn/muTouch.git
+# git clone --recurse-submodules "$REPO_HTTPS"
+  \end{verbatim}
+  If you hit SSH ``permission denied'', use the HTTPS command above or ensure your SSH key is added to GitHub.
+\item Activate env:\\
+  \begin{verbatim}
+conda create -n muTouch python=3.10
+conda activate muTouch
+  \end{verbatim}
+  You should see the shell prompt prefixed with \texttt{(muTouch)} after activation; this isolates dependencies for repeatability.
+\item Install deps:\\
+  \begin{verbatim}
+pip install -r Codes/requirements.txt
+  \end{verbatim}
+  Expect a clean install without errors; rerun from the repo root if paths are not found.
+\item Models: snapshot tag \texttt{backup/3\_dim-models-20260121}.\\ Download binaries from GitHub Releases (Assets).
+\item Set working directory for runtime scripts to \texttt{Codes/}:\\
+  \begin{verbatim}
+cd Codes
+  \end{verbatim}
+\end{enumerate}
+
+\section{Setup \& Configuration}
+\label{sec:setup}
+\begin{enumerate}
+  \item Flash firmware:\\
+  {\scriptsize\texttt{Codes/Arduino/bleReadMultiple/bleReadMultiple.ino}} in Arduino IDE;\\
+  select Feather nRF52; upload.
+  \item Find BLE address: \texttt{python read\_raw\_ble/find\_device.py} (copy device MAC/UUID).
+  \item Hardcode BLE address: edit the \texttt{address = ``...''} line near the bottom of:
+  \begin{itemize}
+    \item \path{read_raw_ble/read_sensor.py}
+    \item \path{read_raw_ble/read_sensor_real.py}
+    \item \path{read_raw_ble/read_sensor_real_classifier.py} (if used)
+  \end{itemize}
+  \item Calibration capture (run inside \texttt{Codes/}):\\
+  \begin{verbatim}
+python read_raw_ble/read_sensor.py
+  \end{verbatim}
+  Do a brief figure-8 motion away from metal surfaces; CSVs are saved under \texttt{datasets/}.
+  \item Offsets/scales: place the latest files named \texttt{offset-*.npy} and \texttt{scale-*.npy} in \path{calibration_files/}. The scripts automatically load the newest files with those prefixes.
+  \item Models: ensure \path{read_raw_ble/models/} holds the downloaded checkpoint set if you need pretrained classifiers.
+\end{enumerate}
+
+\section{Running the Artifact}
+\label{sec:running}
+\subsection{Data capture}
+\noindent Captures raw magnetometer streams over BLE with the latest calibration, writing timestamped CSVs under \texttt{datasets/}.
+\begin{verbatim}
+SCRIPT=read_raw_ble/read_sensor_real.py
+python "$SCRIPT"
+\end{verbatim}
+
+\subsection{Real-time classification}
+\noindent Runs the live classifier; expect gesture labels printed to console and logged in \texttt{datasets/}.
+\begin{verbatim}
+SCRIPT=read_raw_ble/read_sensor_real_classifier.py
+python "$SCRIPT"
+\end{verbatim}
+Ensure the script uses the latest \texttt{offset-*}, \texttt{scale-*}, and model files (picked automatically if they sit in \path{calibration_files/} and \path{read_raw_ble/models/}).
+
+\subsection{Expected outcomes}
+\begin{itemize}
+  \item Face-touching: $\approx$93\% accuracy (8 gestures) with 3\,s fine-tuning/user.
+  \item Scratch detection: $\approx$95\% accuracy (9 gestures) with 3\,s fine-tuning/user.
+  \item Real-time loop maintains $>$30\,Hz inference on a laptop CPU.
+\end{itemize}
+
+\section{Reproducibility Checklist}
+\begin{itemize}
+  \item \textbf{Hardware reproducible}: PCB sources + BOM (muTouch; files named \texttt{Magway.*} for compatibility) included.
+  \item \textbf{Software reproducible}: All scripts + TS2Vec submodule; pinned deps in \texttt{Codes/requirements.txt}.
+  \item \textbf{Data}: Calibration and small demo runs can be generated locally; full datasets are participant-specific and not included.
+  \item \textbf{Pretrained models}: Provided via GitHub tag \texttt{backup/3\_dim-models-20260121}.
+\end{itemize}
+
+\section{Troubleshooting}
+\begin{itemize}
+  \item BLE not found: retry \texttt{find\_device.py}; check power and pairing blocks; use BLE dongle.
+  \item Drifting predictions: recalibrate sensors; ensure distance from large metal; re-run offset/scale.
+  \item Import errors: confirm submodule init (\texttt{git submodule update --init --recursive}) and Python path from repo root.
+\end{itemize}
+
+\section{For Complete Instructions}
+Due to page limits, this PDF is a concise checklist. For full, continuously updated steps and tips, please refer to the repository \texttt{README.md} and the Markdown guide (best viewed via GitHub preview): \href{https://github.com/Wangmerlyn/muTouch/blob/main/artifact/README.md}{\texttt{artifact/README.md}}. Use those as the authoritative references for reproduction and further code tweaks.
+
+\section{Notes on Prior Work}
+The project builds on MagX (MobiCom'21) codebase for magnetic sensing~\cite{mag_x}. This artifact extends it to self-touch sensing and includes updated PCB by Xiaomeng Chen.
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{artifact_refs}
+\end{document}
