@@ -14,7 +14,7 @@ This folder is an isolated package to minimize template mismatch risk.
 Run:
 
 ```bash
-cd artifact/ieee_strict_artifact_guide
+cd artifact/copyright_title_artifact_guide
 ./verify_template.sh
 ```
 
@@ -25,13 +25,13 @@ Expected output:
 ## Compile
 
 ```bash
-cd artifact/ieee_strict_artifact_guide
+cd artifact/copyright_title_artifact_guide
 latexmk -pdf -interaction=nonstopmode main.tex
 ```
 
 Output PDF:
 
-- `artifact/ieee_strict_artifact_guide/main.pdf`
+- `artifact/copyright_title_artifact_guide/main.pdf`
 
 ## Notes
 
