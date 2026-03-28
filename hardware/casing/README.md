@@ -22,5 +22,5 @@ The casing is designed to house the μTouch PCB sensor array and provide a comfo
 
 ## Related
 
-- PCB design files: [`../pcb/`](../pcb/)
-- Firmware: [`../Codes/Arduino/`](../Codes/Arduino/)
+- [PCB design files](../../pcb/)
+- [Firmware](../../Codes/Arduino/)
